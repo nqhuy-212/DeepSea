@@ -23,7 +23,7 @@ st.markdown(
 
 nha_may = st.sidebar.selectbox("Chọn nhà máy",options=['NT1','NT2'])
 reports = ['Tổng hợp','Công nhân Cắt','Công nhân may','Công nhân QC1','Công nhân Là','Công nhân QC2','Công nhân đóng gói','Công nhân NDC','Công nhân phụ','Quản lý']
-bao_cao = st.sidebar.selectbox("Chọn báo cáo",options= reports)
+bao_cao = st.sidebar.selectbox("Chọn báo cáo",options= reports,index=2)
 
 st.markdown(f'<h1 class="centered-title">BÁO CÁO THƯỞNG NĂNG SUẤT ({bao_cao})</h1>', unsafe_allow_html=True)
 if bao_cao == 'Công nhân may':
