@@ -8,9 +8,7 @@ from datetime import date
 import plotly.express as px
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-from dotenv import load_dotenv
-from pathlib import Path
-import os
+from load_data import get_data
 
 st.markdown(
     """
@@ -26,22 +24,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-env_file = BASE_DIR / ".env"
-load_dotenv(env_file)
-
-def get_data(DB,query):
-    conn = pyodbc.connect(
-        'DRIVER={SQL Server};'
-        f'SERVER={os.getenv("SERVER")};'
-        f'DATABASE={DB};'
-        f'UID={os.getenv("UID")};'
-        f'PWD={os.getenv("PASSWORD")}'
-    )
-    df = pd.read_sql(query, conn)
-    conn.close()
-    return df
 
 df1 = get_data('DW','SELECT * FROM ETS_5 WHERE WORKDATE < CAST(GETDATE() AS DATE)')
 df1= df1.groupby(by=['WorkDate','Line']).agg({
