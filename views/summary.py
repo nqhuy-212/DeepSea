@@ -4,7 +4,7 @@ import pyodbc
 from io import BytesIO
 from pyxlsb import open_workbook as open_xlsb
 from datetime import datetime
-from datetime import date
+from datetime import date,timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
@@ -32,8 +32,8 @@ df1= df1.groupby(by=['WorkDate','Line']).agg({
 })
 df2 = get_data('DW','SELECT * FROM PPC')
 #st.dataframe(df2)
-df3 = get_data('DW',"SELECT * FROM HR WHERE (KOIS = 'K' OR (KOIS = 'I' AND LINE LIKE '_TNC01')) AND WORKDATE >= '2024-09-01'")
-#st.dataframe(df3)
+df3 = get_data('DW',"SELECT * FROM HR_INCLUDE_TNC WHERE KOIS = 'K'  AND WORKDATE >= '2024-09-01'")
+# st.dataframe(df3)
 
 #ghép các bảng với nhau
 df = pd.merge(df1,df2, on = ['WorkDate','Line'], how= 'left')
@@ -60,24 +60,30 @@ df['WS*Hours_A'] = df['Worker_A']*df['Hours_A']
 ###########################
 fty = ['NT1','NT2']
 sel_fty = st.sidebar.selectbox("Chọn nhà máy:",options = fty,index=0)
-
 unit = df[df['Fty'] == sel_fty]['Unit'].unique()
 unit_sorted = sorted(unit, reverse= False)
 sel_unit = st.sidebar.multiselect("Chọn xưởng:", options= unit, default= unit_sorted)
 
 min_date = df['WorkDate'].min()
-today = date.today()
+today = date.today() if date.today().day >1 else date.today() - timedelta(days=1)
 first_day_of_month =  today.replace(day=1)
 start_date = st.sidebar.date_input(label="Từ ngày:",value= first_day_of_month)
 
 max_date = df['WorkDate'].max()
 end_date = st.sidebar.date_input(label="Đến ngày:", value= max_date)
 
+styles = df[
+(df['Unit'].isin(sel_unit)) & 
+(df['WorkDate'] >= start_date) & 
+(df['WorkDate'] <= end_date)]['Style_P'].unique()
+sel_style = st.sidebar.multiselect("Chọn Style:",options=styles,default=styles)
+
 st.markdown(f'<h1 class="centered-title">BÁO CÁO TỔNG HỢP {sel_fty}</h1>', unsafe_allow_html=True)
 df4 = df[
 (df['Unit'].isin(sel_unit)) & 
 (df['WorkDate'] >= start_date) & 
-(df['WorkDate'] <= end_date)]
+(df['WorkDate'] <= end_date) &
+(df['Style_P'].isin(sel_style))]
 
 Qty_A = df4['Qty_A'].sum()
 Qty_P = df4['Qty_P'].sum()
@@ -290,7 +296,7 @@ with cols[1]:
     st.plotly_chart(fig,use_container_width=True,key='fig2')
 
 st.markdown("---")
-## Heatmap theo chuyền , ngày
+## Heatmap hiệu suất theo chuyền , ngày
 df_line_eff = df4.groupby(by = ['WorkDate','Line']).agg({
     'SAH_A' : 'sum',
     'Total_hours_A' : 'sum'
@@ -329,7 +335,18 @@ fig.update_traces(
     zmax = 1
 )
 
-st.plotly_chart(fig,use_container_width=True)
+st.plotly_chart(fig,use_container_width=True,key='heatmap1')
+
+## Heatmap style theo chuyền , ngày
+df_line_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P')
+
+with st.expander("Dữ liệu chi tiết"):
+    st.dataframe(df4,hide_index=True)
+
+
+
+
+
 
 
 
