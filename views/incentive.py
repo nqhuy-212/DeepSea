@@ -20,8 +20,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-nha_may = st.sidebar.selectbox("Chọn nhà máy",options=['NT1','NT2'])
+fty =['NT1','NT2']
+nha_may = st.sidebar.selectbox("Chọn nhà máy",options=fty,index=fty.index(st.session_state.factory))
 reports = ['Tổng hợp','Công nhân Cắt','Công nhân may','Công nhân QC1','Công nhân Là','Công nhân QC2','Công nhân đóng gói','Công nhân NDC','Công nhân phụ','Quản lý']
 bao_cao = st.sidebar.selectbox("Chọn báo cáo",options= reports,index=2)
 

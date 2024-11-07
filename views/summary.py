@@ -59,7 +59,7 @@ df['WS*Hours_A'] = df['Worker_A']*df['Hours_A']
 
 ###########################
 fty = ['NT1','NT2']
-sel_fty = st.sidebar.selectbox("Chọn nhà máy:",options = fty,index=0)
+sel_fty = st.sidebar.selectbox("Chọn nhà máy:",options = fty,index=fty.index(st.session_state.factory))
 unit = df[df['Fty'] == sel_fty]['Unit'].unique()
 unit_sorted = sorted(unit, reverse= False)
 sel_unit = st.sidebar.multiselect("Chọn xưởng:", options= unit, default= unit_sorted)

@@ -20,8 +20,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-fty = ['NT1','NT2']
-nha_may = st.sidebar.selectbox("Chọn nhà máy",options= fty, index= fty.index(st.session_state.factory))
+nha_may = st.sidebar.selectbox("Chọn nhà máy",options=['NT1','NT2'])
 st.markdown(f'<h1 class="centered-title">BÁO CÁO NHÂN SỰ ({nha_may})</h1>', unsafe_allow_html=True)
 
 df_danglamviec = get_data(DB='HR',query=f"Select * from Danh_sach_CBCNV where trang_thai_lam_viec = N'Đang làm việc' and Factory = '{nha_may}'")
@@ -182,38 +181,80 @@ fig.update_traces(
 st.plotly_chart(fig,use_container_width=True)
 # ####
 st.markdown("---")
-st.subheader("Tuyển mới")
-df_tuyen_moi = get_data("HR",
-                        f"""
-                        SELECT FACTORY AS NHA_MAY,MST,HO_TEN,NGAY_VAO,DEPARTMENT AS BO_PHAN,SECTION_CODE AS XUONG,LINE AS CHUYEN,
-                        JOB_TITLE_VN AS CHUC_DANH,HEADCOUNT_CATEGORY AS KOIS,DATEDIFF(YEAR,NGAY_SINH,GETDATE()) AS TUOI,QUAN_HUYEN,TINH_TP
-                        FROM DANH_SACH_CBCNV WHERE NGAY_VAO BETWEEN '{start_date}' AND '{end_date}' AND FACTORY = '{nha_may}'
-                        """)
-df_tuyen_moi['nhom_tuoi'] = df_tuyen_moi['TUOI'].apply(lambda x: "Trên 45 tuổi" if x > 45 else "36-45 tuổi" if x > 35 else "26-35 tuổi" if x > 25 else "18-25 tuôi")
-df_tuyen_moi['Phan_loai'] = df_tuyen_moi['CHUC_DANH'] .apply(
-    lambda x: "Công nhân may" if (
-        (x == 'Công nhân may công nghiệp') or 
-        (x == 'Công nhân thử việc may')
-    ) else "Khác"
-)
-tong_tuyen_moi = df_tuyen_moi['MST'].count()
-tong_tuyen_moi_may = df_tuyen_moi[
-    (df_tuyen_moi['CHUC_DANH'] == 'Công nhân may công nghiệp') | 
-    (df_tuyen_moi['CHUC_DANH'] == 'Công nhân thử việc may')
-]['MST'].count()
+st.subheader("Tuyển mới và nghỉ việc")
+#tuyển mới
+df_tuyen_moi = df_RP_HR.groupby(by='NGAY').agg({'TUYEN_MOI' : 'sum'}).reset_index()
+df_tuyen_moi['Chi_so'] = 'Tổng tuyển mới'
+df_tuyen_moi_sew = df_RP_HR[(df_RP_HR['HC_CATEGORY'] == 'I') & (df_RP_HR['CHUYEN'].str.contains('TNC',case=True))].groupby(by='NGAY').agg({'TUYEN_MOI' : 'sum'}).reset_index()
+df_tuyen_moi_sew['Chi_so'] = 'Tổng CN May tuyển mới'
 
-cols = st.columns([0.5, 2, 2])
-with cols[0]:
-    st.info("Tổng quan")
-    st.metric("Tất cả",value=tong_tuyen_moi)
-    st.metric("Công nhân may",value=tong_tuyen_moi_may)
-    st.metric("Khác",value=tong_tuyen_moi-tong_tuyen_moi_may)
-with cols[1]:
-    fig = px.sunburst(
-        df_tuyen_moi,
-        path=['Phan_loai','nhom_tuoi'],
-        labels='count',
-        title= "Tỉ lệ"
-    )
-    st.plotly_chart(fig,use_container_width=True)
-    # st.write(df_tuyen_moi)
+df_tuyen_moi_concat = pd.concat([df_tuyen_moi, df_tuyen_moi_sew], ignore_index=True)
+df_tuyen_moi_concat['NGAY'] = pd.to_datetime(df_tuyen_moi_concat['NGAY'])
+df_tuyen_moi_concat_filtered = df_tuyen_moi_concat.query('NGAY >= @start_date and NGAY <= @end_date')
+# st.write(df_tuyen_moi_concat)
+#vẽ biểu đồ tuyển dụng
+fig = px.line(
+    df_tuyen_moi_concat_filtered,
+    x= 'NGAY',
+    y='TUYEN_MOI',
+    color='Chi_so',
+    text = 'TUYEN_MOI'
+)
+fig.update_layout(
+    title = 'Tuyển mới theo ngày',
+    xaxis_title = 'Ngày',
+    yaxis_title = 'Số người',
+    legend_title_text = "",
+)
+fig.update_xaxes(
+    dtick = 'D1',
+    tickformat = '%d/%m'
+)
+max_tuyen_moi = df_tuyen_moi_concat_filtered['TUYEN_MOI'].max() * 1.1
+fig.update_yaxes(
+    range = [0,50]
+)
+fig.update_traces(
+    textposition = 'top center',
+    textfont = dict(size = 14)
+)
+st.plotly_chart(fig,use_container_width=True,key='tuyen_moi')
+###
+#nghỉ việc
+df_nghi_viec = df_RP_HR.groupby(by='NGAY').agg({'NGHI_VIEC' : 'sum'}).reset_index()
+df_nghi_viec['Chi_so'] = 'Tổng nghỉ việc'
+df_nghi_viec_sew = df_RP_HR[(df_RP_HR['HC_CATEGORY'] == 'K')|((df_RP_HR['HC_CATEGORY'] == 'I') & (df_RP_HR['CHUYEN'].str.contains('TNC',case=True)))].groupby(by='NGAY').agg({'NGHI_VIEC' : 'sum'}).reset_index()
+df_nghi_viec_sew['Chi_so'] = 'Tổng CN May nghỉ việc'
+
+df_nghi_viec_concat = pd.concat([df_nghi_viec, df_nghi_viec_sew], ignore_index=True)
+df_nghi_viec_concat['NGAY'] = pd.to_datetime(df_nghi_viec_concat['NGAY'])
+df_nghi_viec_concat_filtered = df_nghi_viec_concat.query('NGAY >= @start_date and NGAY <= @end_date')
+# st.write(df_nghi_viec_concat)
+#vẽ biểu đồ tuyển dụng
+fig = px.line(
+    df_nghi_viec_concat_filtered,
+    x= 'NGAY',
+    y='NGHI_VIEC',
+    color='Chi_so',
+    text = 'NGHI_VIEC'
+)
+fig.update_layout(
+    title = 'Nghỉ việc theo ngày',
+    xaxis_title = 'Ngày',
+    yaxis_title = 'Số người',
+    legend_title_text = "",
+)
+fig.update_xaxes(
+    dtick = 'D1',
+    tickformat = '%d/%m'
+)
+max_nghi_viec = df_nghi_viec_concat_filtered['NGHI_VIEC'].max() * 1.1
+fig.update_yaxes(
+    range = [0,50]
+)
+fig.update_traces(
+    textposition = 'top center',
+    textfont = dict(size = 14)
+)
+st.plotly_chart(fig,use_container_width=True,key='nghi_viec')
+
