@@ -118,7 +118,6 @@ with cols[1]:
     st.plotly_chart(fig,use_container_width=True)
 with cols[2]:
     df_danglamviec_dropna = df_danglamviec.dropna(subset=['Tinh_TP', 'Quan_huyen'])
-    # df_danglamviec_dropna['Tinh_TP'] = df_danglamviec_dropna['Tinh_TP'].replace({'Tỉnh Nghệ An' : 'Nghệ An',' Nghệ An' : 'Nghệ An'})
     df_danglamviec_dropna['Tinh_TP'] = df_danglamviec_dropna['Tinh_TP'].str.replace(r'Tỉnh|tỉnh','',regex=True)
     df_danglamviec_dropna['Quan_huyen'] = df_danglamviec_dropna['Quan_huyen'].str.replace(r'Huyện|huyện','',regex=True)
     df_danglamviec_dropna['Tinh_TP'] = df_danglamviec_dropna['Tinh_TP'].str.strip()
@@ -180,6 +179,42 @@ fig.update_traces(
     textfont = dict(size = 14)
 )
 st.plotly_chart(fig,use_container_width=True)
+# with st.expander("Dữ liệu biến động nhân sự chi tiết"):
+#     # theo xưởng
+#     ds_xuong = ['1P01','1P02','1P03','1P04','1P05','2P01','2P02','2P03','2P04','2P05']
+#     df_RP_HR['Xưởng'] = df_RP_HR['XUONG'].apply(lambda x: x if x in ds_xuong else "Khác")
+#     df_RP_HR_pivot = df_RP_HR.pivot_table(
+#         index=['Xưởng', 'HC_CATEGORY'],
+#         values=['TUYEN_MOI', 'NGHI_VIEC', 'THAI_SAN_DI_LAM_LAI', 'NGHI_THAI_SAN', 'DIEU_CHUYEN_DEN', 'DIEU_CHUYEN_DI'],
+#         aggfunc='sum'
+#     )
+#     df_RP_HR_pivot['Tuyển mới'] = df_RP_HR_pivot['TUYEN_MOI']
+#     df_RP_HR_pivot['Nghỉ việc'] = df_RP_HR_pivot['NGHI_VIEC'].apply(lambda x: -x)
+#     df_RP_HR_pivot['Thai sản đi làm lại'] = df_RP_HR_pivot['THAI_SAN_DI_LAM_LAI']
+#     df_RP_HR_pivot['Nghỉ thai sản'] = df_RP_HR_pivot['NGHI_THAI_SAN'].apply(lambda x: -x)
+#     df_RP_HR_pivot['Điều chuyển đến'] = df_RP_HR_pivot['DIEU_CHUYEN_DEN']
+#     df_RP_HR_pivot['Điều chuyển đi'] = df_RP_HR_pivot['DIEU_CHUYEN_DI'].apply(lambda x: -x)
+#     df_RP_HR_pivot['+/-'] = df_RP_HR_pivot['Tuyển mới'] + df_RP_HR_pivot['Nghỉ việc'] + df_RP_HR_pivot['Thai sản đi làm lại'] + \
+#         df_RP_HR_pivot['Nghỉ thai sản'] + df_RP_HR_pivot['Điều chuyển đến'] + df_RP_HR_pivot['Điều chuyển đi']
+#     df_RP_HR_pivot = df_RP_HR_pivot.drop(['TUYEN_MOI', 'NGHI_VIEC', 'THAI_SAN_DI_LAM_LAI', 'NGHI_THAI_SAN', 'DIEU_CHUYEN_DEN', 'DIEU_CHUYEN_DI'], axis=1)
+#     ## theo toàn nhà máy
+#     df_RP_HR_pivot_factory = df_RP_HR.pivot_table(
+#         index=['HC_CATEGORY'],
+#         values=['TUYEN_MOI', 'NGHI_VIEC', 'THAI_SAN_DI_LAM_LAI', 'NGHI_THAI_SAN', 'DIEU_CHUYEN_DEN', 'DIEU_CHUYEN_DI'],
+#         aggfunc='sum'
+#     )
+#     df_RP_HR_pivot_factory['Tuyển mới'] = df_RP_HR_pivot_factory['TUYEN_MOI']
+#     df_RP_HR_pivot_factory['Nghỉ việc'] = df_RP_HR_pivot_factory['NGHI_VIEC'].apply(lambda x: -x)
+#     df_RP_HR_pivot_factory['Thai sản đi làm lại'] = df_RP_HR_pivot_factory['THAI_SAN_DI_LAM_LAI']
+#     df_RP_HR_pivot_factory['Nghỉ thai sản'] = df_RP_HR_pivot_factory['NGHI_THAI_SAN'].apply(lambda x: -x)
+#     df_RP_HR_pivot_factory['Điều chuyển đến'] = df_RP_HR_pivot_factory['DIEU_CHUYEN_DEN']
+#     df_RP_HR_pivot_factory['Điều chuyển đi'] = df_RP_HR_pivot_factory['DIEU_CHUYEN_DI'].apply(lambda x: -x)
+#     df_RP_HR_pivot_factory['+/-'] = df_RP_HR_pivot_factory['Tuyển mới'] + df_RP_HR_pivot_factory['Nghỉ việc'] + df_RP_HR_pivot_factory['Thai sản đi làm lại'] + \
+#         df_RP_HR_pivot_factory['Nghỉ thai sản'] + df_RP_HR_pivot_factory['Điều chuyển đến'] + df_RP_HR_pivot_factory['Điều chuyển đi']
+#     df_RP_HR_pivot_factory = df_RP_HR_pivot_factory.drop(['TUYEN_MOI', 'NGHI_VIEC', 'THAI_SAN_DI_LAM_LAI', 'NGHI_THAI_SAN', 'DIEU_CHUYEN_DEN', 'DIEU_CHUYEN_DI'], axis=1)
+
+#     # st.dataframe(df_RP_HR_pivot)
+#     # st.dataframe(df_RP_HR_pivot_factory)
 # ####
 st.markdown("---")
 st.subheader("Tuyển mới")
@@ -196,24 +231,133 @@ df_tuyen_moi['Phan_loai'] = df_tuyen_moi['CHUC_DANH'] .apply(
         (x == 'Công nhân thử việc may')
     ) else "Khác"
 )
+df_tuyen_moi['COUNT'] = 1
 tong_tuyen_moi = df_tuyen_moi['MST'].count()
-tong_tuyen_moi_may = df_tuyen_moi[
-    (df_tuyen_moi['CHUC_DANH'] == 'Công nhân may công nghiệp') | 
-    (df_tuyen_moi['CHUC_DANH'] == 'Công nhân thử việc may')
-]['MST'].count()
-
-cols = st.columns([0.5, 2, 2])
+st.info(f"Tổng tuyển mới : {tong_tuyen_moi}")
+cols = st.columns([1, 1, 1])
 with cols[0]:
-    st.info("Tổng quan")
-    st.metric("Tất cả",value=tong_tuyen_moi)
-    st.metric("Công nhân may",value=tong_tuyen_moi_may)
-    st.metric("Khác",value=tong_tuyen_moi-tong_tuyen_moi_may)
-with cols[1]:
-    fig = px.sunburst(
+    fig = px.pie(
         df_tuyen_moi,
-        path=['Phan_loai','nhom_tuoi'],
-        labels='count',
-        title= "Tỉ lệ"
+        color='Phan_loai',
+        names= 'Phan_loai' ,
+        title= "Tỉ lệ phân bổ theo công việc" 
+    )
+    fig.update_traces(
+        textinfo = 'percent+label+value',
+        textposition = 'outside',
+        textfont = dict(size = 16)
+    )
+    st.plotly_chart(fig,use_container_width=True,key='pie1')
+with cols[1]:
+    fig = px.pie(
+        df_tuyen_moi,
+        color='nhom_tuoi',
+        names= 'nhom_tuoi' ,
+        title= "Tỉ lệ phân bổ theo nhóm tuổi" 
+    )
+    fig.update_traces(
+        textinfo = 'percent+label',
+        textposition = 'outside',
+        textfont = dict(size = 16)
     )
     st.plotly_chart(fig,use_container_width=True)
     # st.write(df_tuyen_moi)
+with cols[2]:
+    df_tuyen_moi_groupby_chuc_danh = df_tuyen_moi.groupby(by=['CHUC_DANH','XUONG']).agg({'COUNT' : 'sum'}).reset_index()
+    # st.dataframe(df_tuyen_moi_groupby_chuc_danh)
+    fig = px.bar(
+        df_tuyen_moi_groupby_chuc_danh,
+        y ='CHUC_DANH',
+        x= 'COUNT',
+        color='XUONG',
+        title= "Tổng số lượng tuyển mới theo chức danh",
+        text= 'COUNT'
+    )
+    fig.update_yaxes(
+        dtick= "D1"
+    )
+    fig.update_layout(
+        xaxis_title = 'Số người tuyển mới',
+        yaxis_title = 'Chức danh',
+        legend_title_text = ""
+    )
+    fig.update_traces(
+        textposition = 'outside',
+        textfont = dict(color = 'white' , size = 16)
+    )
+    st.plotly_chart(fig,use_container_width=True)
+with st.expander("Dữ liệu tuyển mới chi tiết"):
+    st.dataframe(df_tuyen_moi)
+###
+st.markdown("---")
+st.subheader("Nghỉ việc")
+df_nghi_viec = get_data("HR",
+                        f"""
+                        SELECT FACTORY AS NHA_MAY,MST,HO_TEN,NGAY_VAO,NGAY_NGHI,DATEDIFF(DAY,NGAY_VAO,NGAY_NGHI) AS SO_NGAY,DEPARTMENT AS BO_PHAN,SECTION_CODE AS XUONG,LINE AS CHUYEN,
+                        JOB_TITLE_VN AS CHUC_DANH,HEADCOUNT_CATEGORY AS KOIS,QUAN_HUYEN,TINH_TP
+                        FROM DANH_SACH_CBCNV WHERE NGAY_NGHI BETWEEN '{start_date}' AND '{end_date}' AND FACTORY = '{nha_may}'
+                        """)
+df_nghi_viec['Thâm niên'] = df_nghi_viec['SO_NGAY'].apply(lambda x: "Trên 1 năm" if x > 365 else "6-12 tháng" if x > 182 else "3-6 tháng" if x > 91 else "1-3 tháng" if x >30 else "Dưới 1 tháng")
+df_nghi_viec['Phan_loai'] = df_nghi_viec['CHUC_DANH'] .apply(
+    lambda x: "Công nhân may" if (
+        (x == 'Công nhân may công nghiệp') or 
+        (x == 'Công nhân thử việc may')
+    ) else "Khác"
+)
+df_nghi_viec['COUNT'] = 1
+tong_nghi_viec = df_nghi_viec['MST'].count()
+st.info(f"Tổng nghỉ việc : {tong_nghi_viec}")
+cols = st.columns([1, 1, 1])
+with cols[0]:
+    fig = px.pie(
+        df_nghi_viec,
+        color='Phan_loai',
+        names= 'Phan_loai' ,
+        title= "Tỉ lệ phân bổ theo công việc" 
+    )
+    fig.update_traces(
+        textinfo = 'percent+label+value',
+        textposition = 'outside',
+        textfont = dict(size = 16)
+    )
+    st.plotly_chart(fig,use_container_width=True,key='pie2')
+with cols[1]:
+    fig = px.pie(
+        df_nghi_viec,
+        color='Thâm niên',
+        names= 'Thâm niên' ,
+        title= "Tỉ lệ phân bổ theo thâm niên làm việc" 
+    )
+    fig.update_traces(
+        textinfo = 'percent+label',
+        textposition = 'outside',
+        textfont = dict(size = 16)
+    )
+    st.plotly_chart(fig,use_container_width=True)
+
+with cols[2]:
+    df_nghi_viec_groupby_chuc_danh = df_nghi_viec.groupby(by=['CHUC_DANH','XUONG']).agg({'COUNT' : 'sum'}).reset_index()
+    fig = px.bar(
+        df_nghi_viec_groupby_chuc_danh,
+        y ='CHUC_DANH',
+        x= 'COUNT',
+        color='XUONG',
+        title= "Tổng số lượng nghỉ việc theo chức danh",
+        text= 'COUNT'
+    )
+    fig.update_yaxes(
+        dtick= "D1"
+    )
+    fig.update_layout(
+        xaxis_title = 'Số người nghỉ việc',
+        yaxis_title = 'Chức danh',
+        legend_title_text = ""
+    )
+    fig.update_traces(
+        textposition = 'outside',
+        textfont = dict(color = 'white' , size = 16)
+    )
+    st.plotly_chart(fig,use_container_width=True)
+with st.expander("Dữ liệu nghỉ việc chi tiết"):
+    st.dataframe(df_nghi_viec)
+# ###
