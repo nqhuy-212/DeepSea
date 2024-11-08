@@ -34,10 +34,7 @@ if bao_cao == 'Công nhân may':
     df_cn_may_selected = df_cn_may_selected[~df_cn_may_selected['CHUYEN'].str.contains('TNC')]
     xuong = st.sidebar.multiselect("Chọn xưởng",options=df_cn_may_selected['XUONG'].unique(),default=df_cn_may_selected['XUONG'].unique())
     df_cn_may_selected= df_cn_may_selected[df_cn_may_selected['XUONG'].isin(xuong)]
-    so_ngay_min = df_cn_may_selected['SO_NGAY'].min()
-    so_ngay_max = df_cn_may_selected['SO_NGAY'].max()
-    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",min_value= so_ngay_min,max_value=so_ngay_max,value=[so_ngay_min,so_ngay_max])
-    df_cn_may_selected = df_cn_may_selected.query('SO_NGAY >= @so_ngay_from and SO_NGAY <=@so_ngay_to')
+    ###
     cols = st.columns([1,1,12])
     with cols[0]:
         nam_opt = df_cn_may_selected['NAM'].sort_values(ascending=False).unique()
@@ -52,6 +49,12 @@ if bao_cao == 'Công nhân may':
     df_cn_may_selected = df_cn_may_selected[df_cn_may_selected['CHUYEN'].isin(chuyen)]
     df_cn_may_selected['Hiệu suất'] = df_cn_may_selected['EFF_TB'].apply(lambda x: f"{x:.0%}")
     df_cn_may_selected['Tiền thưởng'] = df_cn_may_selected['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
+    ###
+    so_ngay_min = df_cn_may_selected['SO_NGAY'].min()
+    so_ngay_max = df_cn_may_selected['SO_NGAY'].max()
+    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",min_value= so_ngay_min,max_value=so_ngay_max,value=[so_ngay_min,so_ngay_max])
+    df_cn_may_selected = df_cn_may_selected.query('SO_NGAY >= @so_ngay_from and SO_NGAY <=@so_ngay_to')
+    ###
     cols = st.columns([1,4,2])
     with cols[0]:
         so_cn = df_cn_may_selected['MST'].count()
@@ -192,3 +195,6 @@ if bao_cao == 'Công nhân may':
             yaxis_title = 'Tiền thưởng'
         )
         st.plotly_chart(fig,use_container_width=True)
+# if bao_cao == 'Tổng hợp':
+#     df_nhom_cat = get_data(DB='INCENTIVE',query=f"SELECT * FROM THUONG_NHOM_CAT_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%C99'")
+#     st.dataframe(df_nhom_cat)
