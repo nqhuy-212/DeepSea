@@ -195,6 +195,81 @@ if bao_cao == 'Công nhân may':
             yaxis_title = 'Tiền thưởng'
         )
         st.plotly_chart(fig,use_container_width=True)
-# if bao_cao == 'Tổng hợp':
-#     df_nhom_cat = get_data(DB='INCENTIVE',query=f"SELECT * FROM THUONG_NHOM_CAT_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%C99'")
-#     st.dataframe(df_nhom_cat)
+if bao_cao == 'Tổng hợp':
+    df_nhom_may = get_data(DB='INCENTIVE',query=f"SELECT * FROM THUONG_NHOM_MAY_HANG_NGAY WHERE 'NT' + LEFT(LINE,1) = '{nha_may}'")
+    df_nhom_may['Month'] = df_nhom_may['WorkDate'].str[5:7]
+    df_nhom_may['Year'] = df_nhom_may['WorkDate'].str[:4]
+    years = df_nhom_may['Year'].sort_values(ascending=False).unique()
+    sel_year = st.sidebar.selectbox("Chọn năm",options=years)
+    months = df_nhom_may[df_nhom_may['Year']==sel_year]['Month'].sort_values(ascending = False).unique()
+    sel_month = st.sidebar.selectbox("Chọn tháng",months)
+    df_nhom_may = df_nhom_may.query("Month == @sel_month and Year == @sel_year")
+    # st.dataframe(df_nhom_may)
+    df_nhom_cat = get_data(DB='INCENTIVE',query=f"SELECT * FROM THUONG_NHOM_CAT_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%C99'")
+    df_nhom_cat['THANG']= df_nhom_cat['NGAY'].str[5:7]
+    df_nhom_cat['NAM']= df_nhom_cat['NGAY'].str[:4]
+    df_nhom_cat = df_nhom_cat.query("NAM == @sel_year and THANG == @sel_month")
+    # st.dataframe(df_nhom_cat)
+    df_nhom_qc1 = get_data(DB='INCENTIVE',query=f"SELECT * FROM THUONG_NHOM_QC1_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%QC199'")
+    df_nhom_qc1['THANG']= df_nhom_qc1['NGAY'].str[5:7]
+    df_nhom_qc1['NAM']= df_nhom_qc1['NGAY'].str[:4]
+    df_nhom_qc1 = df_nhom_qc1.query("NAM == @sel_year and THANG == @sel_month")
+    # st.dataframe(df_nhom_qc1)
+    df_nhom_la = get_data(DB='INCENTIVE',query=f"SELECT * FROM THUONG_NHOM_LA_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND CHUYEN NOT LIKE '%I99'")
+    df_nhom_la['THANG']= df_nhom_la['NGAY'].str[5:7]
+    df_nhom_la['NAM']= df_nhom_la['NGAY'].str[:4]
+    df_nhom_la = df_nhom_la.query("NAM == @sel_year and THANG == @sel_month")
+    # st.dataframe(df_nhom_la)
+    df_nhom_qc2 = get_data(DB='INCENTIVE',query=f"SELECT * FROM THUONG_NHOM_QC2_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%QC299'")
+    df_nhom_qc2['THANG']= df_nhom_qc2['NGAY'].str[5:7]
+    df_nhom_qc2['NAM']= df_nhom_qc2['NGAY'].str[:4]
+    df_nhom_qc2 = df_nhom_qc2.query("NAM == @sel_year and THANG == @sel_month")
+    # st.dataframe(df_nhom_qc2)
+    df_nhom_hoan_thien = get_data(DB='INCENTIVE',query=f"SELECT * FROM THUONG_NHOM_DONG_GOI_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%F99'")
+    df_nhom_hoan_thien['THANG']= df_nhom_hoan_thien['NGAY'].str[5:7]
+    df_nhom_hoan_thien['NAM']= df_nhom_hoan_thien['NGAY'].str[:4]
+    df_nhom_hoan_thien = df_nhom_hoan_thien.query("NAM == @sel_year and THANG == @sel_month")
+    # st.dataframe(df_nhom_hoan_thien)
+    df_nhom_ndc = get_data(DB='INCENTIVE',query=f"SELECT * FROM THUONG_NHOM_NDC_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%NDC99'")
+    df_nhom_ndc['THANG']= df_nhom_ndc['NGAY'].str[5:7]
+    df_nhom_ndc['NAM']= df_nhom_ndc['NGAY'].str[:4]
+    df_nhom_ndc = df_nhom_ndc.query("NAM == @sel_year and THANG == @sel_month")
+    # st.dataframe(df_nhom_ndc)
+    df_quan_ly = get_data(DB='INCENTIVE',query=f"SELECT * FROM INCENTIVE_QUANLY_HANG_NGAY WHERE 'NT'+LEFT(CHUYEN,1) = '{nha_may}'")
+    df_quan_ly['THANG']= df_quan_ly['NGAY'].str[5:7]
+    df_quan_ly['NAM']= df_quan_ly['NGAY'].str[:4]
+    df_quan_ly = df_quan_ly.query("NAM == @sel_year and THANG == @sel_month")
+    # st.dataframe(df_quan_ly)
+    df_cn_phu = get_data(DB='INCENTIVE',query=f"SELECT * FROM INCENTIVE_CN_PHU_HANG_NGAY WHERE 'NT'+LEFT(CHUYEN,1) = '{nha_may}'")
+    df_cn_phu['THANG']= df_cn_phu['NGAY'].str[5:7]
+    df_cn_phu['NAM']= df_cn_phu['NGAY'].str[:4]
+    df_cn_phu = df_cn_phu.query("NAM == @sel_year and THANG == @sel_month")
+    # st.dataframe(df_cn_phu)
+    st.info("Tổng tiền thưởng Incentive")
+    cols = st.columns(4)
+    with cols[0]:
+        tong_thuong_cat = df_nhom_cat['TONG_THUONG_NHOM'].sum()
+        st.metric("Nhóm Cắt",value=f"{tong_thuong_cat:,.0f} VNĐ")
+        ###
+        tong_thuong_qc2 = df_nhom_qc2['TONG_THUONG_NHOM'].sum()
+        st.metric("Nhóm QC2",value=f"{tong_thuong_qc2:,.0f} VNĐ")
+    with cols[1]:
+        tong_thuong_may = df_nhom_may['TONG_THUONG'].sum()
+        st.metric("Nhóm May",value=f"{tong_thuong_may:,.0f} VNĐ")
+        ###
+        tong_thuong_hoan_thien = df_nhom_hoan_thien['TONG_THUONG_NHOM'].sum()
+        st.metric("Nhóm Hoàn thiện",value=f"{tong_thuong_hoan_thien:,.0f} VNĐ")
+    with cols[2]:
+        tong_thuong_qc1 = df_nhom_qc1['TONG_THUONG_NHOM'].sum()
+        st.metric("Nhóm QC1",value=f"{tong_thuong_qc1:,.0f} VNĐ")
+        ###
+        tong_thuong_NDC= df_nhom_ndc['THUONG_NHOM'].sum()
+        st.metric("Nhóm Dò kim",value=f"{tong_thuong_NDC:,.0f} VNĐ")
+    with cols[3]:
+        tong_thuong_la = df_nhom_la['TONG_THUONG_NHOM'].sum()
+        st.metric("Nhóm Là",value=f"{tong_thuong_la:,.0f} VNĐ")
+         ###
+        tong_thuong_quan_ly= df_quan_ly['THUONG_CA_NHAN'].sum()
+        tong_thuong_cn_phu= df_cn_phu['THUONG_CA_NHAN'].sum()
+        st.metric("Nhóm Quản lý",value=f"{tong_thuong_quan_ly:,.0f} VNĐ")
+        st.metric("Nhóm công nhân phụ",value=f"{tong_thuong_cn_phu:,.0f} VNĐ")

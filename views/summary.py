@@ -339,7 +339,27 @@ st.plotly_chart(fig,use_container_width=True,key='heatmap1')
 
 ## Heatmap style theo chuyền , ngày
 df_line_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P')
-
+fig = px.density_heatmap(
+    df_line_style,
+    color_continuous_scale= "Blues",
+    text_auto=True)
+fig.update_layout(
+    title = 'Phân bổ đơn hàng theo chuyền',
+    xaxis_title = 'Chuyền',
+    yaxis_title = 'Style',
+    coloraxis_colorbar_title='Số ngày'
+)
+fig.update_xaxes(
+    tickfont = dict(size = 14)
+)
+fig.update_yaxes(
+    tickfont = dict(size = 14)
+)
+fig.update_traces(
+    textfont = dict(size = 14)
+)
+st.plotly_chart(fig,use_container_width=True)
+# st.dataframe(df_line_style)
 with st.expander("Dữ liệu chi tiết"):
     st.dataframe(df4,hide_index=True)
 
