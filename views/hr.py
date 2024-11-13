@@ -243,8 +243,8 @@ with cols[0]:
         title= "Tỉ lệ phân bổ theo công việc" 
     )
     fig.update_traces(
-        textinfo = 'percent+label+value',
-        textposition = 'outside',
+        textinfo = 'percent+value',
+        textposition = 'inside',
         textfont = dict(size = 16)
     )
     st.plotly_chart(fig,use_container_width=True,key='pie1')
@@ -256,8 +256,8 @@ with cols[1]:
         title= "Tỉ lệ phân bổ theo nhóm tuổi" 
     )
     fig.update_traces(
-        textinfo = 'percent+label',
-        textposition = 'outside',
+        textinfo = 'percent',
+        textposition = 'inside',
         textfont = dict(size = 16)
     )
     st.plotly_chart(fig,use_container_width=True)
@@ -316,8 +316,8 @@ with cols[0]:
         title= "Tỉ lệ phân bổ theo công việc" 
     )
     fig.update_traces(
-        textinfo = 'percent+label+value',
-        textposition = 'outside',
+        textinfo = 'percent+value',
+        textposition = 'inside',
         textfont = dict(size = 16)
     )
     st.plotly_chart(fig,use_container_width=True,key='pie2')
@@ -329,8 +329,8 @@ with cols[1]:
         title= "Tỉ lệ phân bổ theo thâm niên làm việc" 
     )
     fig.update_traces(
-        textinfo = 'percent+label',
-        textposition = 'outside',
+        textinfo = 'percent',
+        textposition = 'inside',
         textfont = dict(size = 16)
     )
     st.plotly_chart(fig,use_container_width=True)
