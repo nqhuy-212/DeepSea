@@ -1,7 +1,7 @@
 import streamlit as st 
 from load_data import get_data
 
-st.set_page_config(layout= 'wide')
+st.set_page_config(layout= 'wide',page_title="DeepSea",page_icon="logo_blue.png")
 st.logo("logo_white.png",size= 'large')
 st.markdown(
     """
@@ -61,9 +61,10 @@ if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
+    st.markdown(f'<h1 class="centered-title"> &nbsp D e e p  S e a</h1>', unsafe_allow_html=True)
     cols = st.columns(3)
     with cols[1]:
-        st.markdown(f'<h1 class="centered-title">Deep Sea</h1>', unsafe_allow_html=True)
+        
         cols = st.columns(3)
         with cols[1]:
             st.image("logo_white.png",use_column_width=True)
