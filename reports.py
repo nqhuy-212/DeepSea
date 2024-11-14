@@ -1,7 +1,7 @@
 import streamlit as st 
 from load_data import get_data
 
-st.set_page_config(layout= 'wide',page_title="DeepSea",page_icon="logo_blue.png")
+st.set_page_config(layout= 'wide',page_title="DeepSea",page_icon="logo_blue.png",)
 st.logo("logo_white.png",size= 'large')
 st.markdown(
     """
@@ -57,6 +57,12 @@ salary_page = st.Page(
     icon= ':material/credit_card:'
 )
 
+QCO_page = st.Page(
+    page="views/QCO.py",
+    title= "Báo cáo QCO",
+    icon= ':material/fast_forward:'
+)
+
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
@@ -90,7 +96,7 @@ else:
     # if st.sidebar.button("Làm mới dữ liệu"):
     #     st.rerun()
     pg = st.navigation(pages={
-    'Chọn trang' :[sumary_page,incentive_page,hr_page,tnc_page,salary_page]})   
+    'Chọn trang' :[sumary_page,incentive_page,hr_page,tnc_page,salary_page,QCO_page]})   
     pg.run()
 
 

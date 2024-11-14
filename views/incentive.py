@@ -197,55 +197,55 @@ if bao_cao == 'Công nhân may':
         st.plotly_chart(fig,use_container_width=True)
 if bao_cao == 'Tổng hợp':
     df_nhom_cat = get_data(DB='INCENTIVE',query=f"""
-                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
                            TGLV as TONG_TGLV,TONG_THUONG,SO_NGAY,N'Cắt' as NHOM
                            FROM TONG_HOP_TGLV_TONG_THUONG_CN_CAT WHERE NHA_MAY = '{nha_may}'
                            """)
     
     df_nhom_may = get_data(DB='INCENTIVE',query=f"""
-                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
                            TONG_TGLV,TONG_THUONG,SO_NGAY,'May' as NHOM
                            FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_CN_MAY WHERE NHA_MAY = '{nha_may}' 
                            """)
     
     df_nhom_qc1 = get_data(DB='INCENTIVE',query=f"""
-                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
                            TONG_TGLV,TONG_THUONG,SO_NGAY,N'QC1' as NHOM
                            FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_TGLV_QC1 WHERE NHA_MAY = '{nha_may}'
                            """)
     
     df_nhom_la = get_data(DB='INCENTIVE',query=f"""
-                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
                            TONG_TGLV,TONG_THUONG,SO_NGAY,N'Là' as NHOM
                            FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_TGLV_LA WHERE NHA_MAY = '{nha_may}'
                            """)
     
     df_nhom_qc2 = get_data(DB='INCENTIVE',query=f"""
-                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
                            TONG_TGLV,TONG_THUONG,SO_NGAY,N'QC2' as NHOM
                            FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_TGLV_QC2 WHERE NHA_MAY = '{nha_may}'
                            """)
     
     df_nhom_hoan_thien = get_data(DB='INCENTIVE',query=f"""
-                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
                            TGLV AS TONG_TGLV,TONG_THUONG,SO_NGAY,N'Hoàn thiện' as NHOM
                            FROM TONG_HOP_TGLV_TONG_THUONG_CN_DONG_GOI WHERE NHA_MAY = '{nha_may}'
                            """)
     
     df_nhom_NDC = get_data(DB='INCENTIVE',query=f"""
-                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
                            TGLV AS TONG_TGLV,TONG_THUONG,SO_NGAY,N'NDC' as NHOM
                            FROM TONG_HOP_TGLV_TONG_THUONG_CN_NDC WHERE NHA_MAY = '{nha_may}'
                            """)
     
     df_nhom_phu = get_data(DB='INCENTIVE',query=f"""
-                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
                            TGLV AS TONG_TGLV,TONG_THUONG,SO_NGAY,N'CN Phụ' as NHOM
                            FROM TONG_HOP_TGLV_TONG_THUONG_CN_PHU WHERE NHA_MAY = '{nha_may}'
                            """)
     
     df_nhom_quan_ly = get_data(DB='INCENTIVE',query=f"""
-                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
                            TGLV AS TONG_TGLV,TONG_THUONG,SO_NGAY,N'Quản lý' as NHOM
                            FROM TONG_HOP_TGLV_TONG_THUONG_QUAN_LY WHERE NHA_MAY = '{nha_may}'
                            """)
@@ -324,7 +324,7 @@ if bao_cao == 'Tổng hợp':
             range = [0,max_tien_tb]
         )
         st.plotly_chart(fig,use_container_width=True)
-    cols = st.columns([1,2])
+    cols = st.columns([1,3])
     with cols[0]:
         df_xuong_nhom = df.groupby(by = ['XUONG','NHOM']).agg({'TONG_THUONG' : 'sum'}).reset_index()
         # st.write(df_xuong_nhom)
@@ -352,8 +352,950 @@ if bao_cao == 'Tổng hợp':
             title= 'Trung bình tiền thưởng theo xưởng, nhóm',
             xaxis_title = 'Nhóm',
             yaxis_title = 'Trung bình tiền thưởng',
-            bargap=0.1
+            bargap=0.1,
+            legend_title='Xưởng'
             )
         
         st.plotly_chart(fig,use_container_width=True)
-        
+    with st.expander("Dữ liệu chi tiết"):
+        st.dataframe(df)
+if bao_cao == 'Công nhân Cắt':
+    df = get_data(DB='INCENTIVE',query=f"""
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
+                           TGLV as TONG_TGLV,TONG_THUONG,SO_NGAY
+                           FROM TONG_HOP_TGLV_TONG_THUONG_CN_CAT WHERE NHA_MAY = '{nha_may}'
+                           """)
+    df['XUONG'] = df['CHUYEN'].apply(lambda x: x[:1] +'TNC' if 'TNC' in x \
+                                    else x[:1] + 'NDC' if 'NDC' in x \
+                                        else x[:1] + 'P0' + x[1:2])
+    df['CHUC_VU'] = df['CHUC_VU'].str.replace(r'thợ cắt|Thợ Cắt','Thợ cắt',regex=True)
+    df['CHUC_VU'] = df['CHUC_VU'].str.replace(r'Công nhân vận hành máy Cắt','Công nhân vận hành máy cắt',regex=True)
+    nam = df['NAM'].sort_values(ascending=False).unique()
+    sel_nam = st.sidebar.selectbox("Chọn năm",options=nam)
+    df_fitered = df[df['NAM'] == sel_nam]
+    thang = df_fitered['THANG'].sort_values(ascending=False).unique()
+    sel_thang = st.sidebar.selectbox("Chọn tháng",options=thang)
+    df_fitered = df_fitered[df_fitered['THANG'] == sel_thang]
+    so_ngay_min = df_fitered['SO_NGAY'].min()
+    so_ngay_max = df_fitered['SO_NGAY'].max()
+    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",value=(so_ngay_min,so_ngay_max))
+    df_fitered = df_fitered.query("SO_NGAY >= @so_ngay_from and SO_NGAY <= @so_ngay_to")
+    cols = st.columns(2)
+    with cols[0]:
+        tong_thuong = df_fitered['TONG_THUONG'].sum()
+        st.metric("Tổng tiền thưởng nhóm Cắt",value=f"{tong_thuong:,.0f}")
+        ###
+        df_fitered['Tiền thưởng'] = df_fitered['TONG_THUONG'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+        fig = px.scatter(df_fitered,
+                         x='SO_NGAY',
+                         y='TONG_THUONG',
+                         color='CHUC_VU',
+                         size='TONG_TGLV',
+                         hover_data={
+                             'MST' : True,
+                             'HO_TEN' : True,
+                             'TONG_TGLV' : True,
+                             'Tiền thưởng' : True,
+                             'TONG_THUONG' : False
+                         }
+                         )
+        fig.update_layout(
+            title = 'Phân bổ tiền thưởng theo số ngày làm việc',
+            xaxis_title = 'Số ngày làm việc',
+            yaxis_title = 'Tiền thưởng',
+            legend_title = 'Chức danh'
+        )
+        fig.update_traces(
+            marker = dict(line = dict(width = 1, color = 'white'))
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with cols[1]:
+        tb_thuong = df_fitered['TONG_THUONG'].mean()
+        st.metric("Trung bình tiền thưởng công nhân Cắt",value=f"{tb_thuong:,.0f}")
+        ###
+        df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
+        df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
+        ds_chuc_vu = ['Công nhân trải vải','Công nhân vận hành máy cắt','Thợ cắt']
+        df_chuc_vu = df_chuc_vu[df_chuc_vu['CHUC_VU'].isin(ds_chuc_vu)]
+        fig = px.bar(
+            df_chuc_vu,
+            x='CHUC_VU',
+            y='TONG_THUONG',
+            color='XUONG',
+            barmode='group',
+            text='Trung bình thưởng'
+        )
+        fig.update_layout(
+            title = "Trung bình tiền thưởng theo chức danh",
+            xaxis_title = 'Chức danh',
+            yaxis_title = 'Trung bình tiền thưởng',
+            legend_title = 'Xưởng'
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with st.expander("Dữ liệu chi tiết"):
+        st.dataframe(df_fitered)
+    st.markdown("---")
+    df_nhom = get_data(DB='INCENTIVE',query=f"""
+                           SELECT * FROM THUONG_NHOM_CAT_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%99'
+                           ORDER BY NGAY,NHOM
+                           """)
+    df_nhom['NAM'] = df_nhom['NGAY'].apply(lambda x: x[:4])
+    df_nhom['THANG'] = df_nhom['NGAY'].apply(lambda x: x[5:7])
+    df_nhom= df_nhom.query("NAM == @sel_nam and THANG == @sel_thang")
+    df_nhom['Hiệu suất'] = df_nhom['EFF'].apply(lambda x: f"{x:,.0%}")
+    df_nhom['Thưởng nhóm'] = df_nhom['TONG_THUONG_NHOM'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+    ###
+    fig = px.line(
+        df_nhom,
+        x="NGAY",
+        y="EFF",
+        color= 'NHOM',
+        text=  'Hiệu suất'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Hiệu suất từng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Hiệu suất",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line1')
+    ###
+    fig = px.line(
+    df_nhom,
+    x="NGAY",
+    y="TONG_THUONG_NHOM",
+    color= 'NHOM',
+    text=  'Thưởng nhóm'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Hiệu suất từng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Thưởng nhóm",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line2')
+    with st.expander("Dữ liệu thưởng nhóm chi tiết"):
+        st.dataframe(df_nhom)
+if bao_cao == 'Công nhân QC1':
+    df = get_data(DB='INCENTIVE',query=f"""
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
+                           TONG_TGLV,EFF_TB,TONG_THUONG,SO_NGAY
+                           FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_TGLV_QC1 WHERE NHA_MAY = '{nha_may}'
+                           """)
+    df['XUONG'] = df['CHUYEN'].apply(lambda x: x[:1] +'TNC' if 'TNC' in x \
+                                    else x[:1] + 'NDC' if 'NDC' in x \
+                                        else x[:1] + 'P0' + x[1:2])
+    nam = df['NAM'].sort_values(ascending=False).unique()
+    sel_nam = st.sidebar.selectbox("Chọn năm",options=nam)
+    df_fitered = df[df['NAM'] == sel_nam]
+    thang = df_fitered['THANG'].sort_values(ascending=False).unique()
+    sel_thang = st.sidebar.selectbox("Chọn tháng",options=thang)
+    df_fitered = df_fitered[df_fitered['THANG'] == sel_thang]
+    so_ngay_min = df_fitered['SO_NGAY'].min()
+    so_ngay_max = df_fitered['SO_NGAY'].max()
+    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",value=(so_ngay_min,so_ngay_max))
+    df_fitered = df_fitered.query("SO_NGAY >= @so_ngay_from and SO_NGAY <= @so_ngay_to")
+    cols = st.columns(2)
+    with cols[0]:
+        tong_thuong = df_fitered['TONG_THUONG'].sum()
+        st.metric("Tổng tiền thưởng nhóm QC1",value=f"{tong_thuong:,.0f}")
+        ###
+        df_fitered['Tiền thưởng'] = df_fitered['TONG_THUONG'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+        df_fitered['Hiệu suất'] = df_fitered['EFF_TB'].apply(lambda x: f"{x:,.0%}")
+        fig = px.scatter(df_fitered,
+                         x='EFF_TB',
+                         y='TONG_THUONG',
+                         color='CHUC_VU',
+                         size='TONG_TGLV',
+                         hover_data={
+                             'MST' : True,
+                             'HO_TEN' : True,
+                             'TONG_TGLV' : True,
+                             'Hiệu suất' : True,
+                             'Tiền thưởng' : True,
+                             'TONG_THUONG' : False,
+                             'EFF_TB' : False,
+                             'CHUC_VU' : True
+                         }
+                         )
+        fig.update_layout(
+            title = 'Phân bổ tiền thưởng theo hiệu suất cá nhân',
+            xaxis_title = 'Hiệu suất cá nhân',
+            yaxis_title = 'Tiền thưởng'
+        )
+        fig.update_xaxes(
+            tickformat = ',.0%'
+        )
+        fig.update_traces(
+            marker = dict(line = dict(width = 1, color = 'white'))
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with cols[1]:
+        tb_thuong = df_fitered['TONG_THUONG'].mean()
+        st.metric("Trung bình tiền thưởng công nhân QC1",value=f"{tb_thuong:,.0f}")
+        ###
+        df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
+        df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
+        ds_chuc_vu = ['Công nhân kiểm hàng may']
+        df_chuc_vu = df_chuc_vu[df_chuc_vu['CHUC_VU'].isin(ds_chuc_vu)]
+        fig = px.bar(
+            df_chuc_vu,
+            x='CHUC_VU',
+            y='TONG_THUONG',
+            color='XUONG',
+            barmode='group',
+            text='Trung bình thưởng'
+        )
+        fig.update_layout(
+            title = "Trung bình tiền thưởng theo chức danh",
+            xaxis_title = 'Chức danh',
+            yaxis_title = 'Trung bình tiền thưởng',
+            legend_title = 'Xưởng'
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with st.expander("Dữ liệu chi tiết"):
+        st.dataframe(df_fitered)
+    st.markdown("---")
+    df_nhom = get_data(DB='INCENTIVE',query=f"""
+                           SELECT * FROM THUONG_NHOM_QC1_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%99'
+                           ORDER BY NGAY,NHOM
+                           """)
+    df_nhom['NAM'] = df_nhom['NGAY'].apply(lambda x: x[:4])
+    df_nhom['THANG'] = df_nhom['NGAY'].apply(lambda x: x[5:7])
+    df_nhom= df_nhom.query("NAM == @sel_nam and THANG == @sel_thang")
+    df_nhom['Hiệu suất'] = df_nhom['EFF'].apply(lambda x: f"{x:,.0%}")
+    df_nhom['Thưởng nhóm'] = df_nhom['TONG_THUONG_NHOM'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+    ###
+    fig = px.line(
+        df_nhom,
+        x="NGAY",
+        y="EFF",
+        color= 'NHOM',
+        text=  'Hiệu suất'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Hiệu suất từng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Hiệu suất",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line1')
+    ###
+    fig = px.line(
+    df_nhom,
+    x="NGAY",
+    y="TONG_THUONG_NHOM",
+    color= 'NHOM',
+    text=  'Thưởng nhóm'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Tổng tiền thưởng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Thưởng nhóm",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line2')
+    with st.expander("Dữ liệu thưởng nhóm chi tiết"):
+        st.dataframe(df_nhom)
+if bao_cao == 'Công nhân Là':
+    df = get_data(DB='INCENTIVE',query=f"""
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
+                           TONG_TGLV,EFF_TB,TONG_THUONG,SO_NGAY
+                           FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_TGLV_LA WHERE NHA_MAY = '{nha_may}'
+                           """)
+    df['XUONG'] = df['CHUYEN'].apply(lambda x: x[:1] +'TNC' if 'TNC' in x \
+                                    else x[:1] + 'NDC' if 'NDC' in x \
+                                        else x[:1] + 'P0' + x[1:2])
+    df['CHUC_VU'] = df['CHUC_VU'].str.replace(r'là','Là',regex =True)
+    nam = df['NAM'].sort_values(ascending=False).unique()
+    sel_nam = st.sidebar.selectbox("Chọn năm",options=nam)
+    df_fitered = df[df['NAM'] == sel_nam]
+    thang = df_fitered['THANG'].sort_values(ascending=False).unique()
+    sel_thang = st.sidebar.selectbox("Chọn tháng",options=thang)
+    df_fitered = df_fitered[df_fitered['THANG'] == sel_thang]
+    so_ngay_min = df_fitered['SO_NGAY'].min()
+    so_ngay_max = df_fitered['SO_NGAY'].max()
+    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",value=(so_ngay_min,so_ngay_max))
+    df_fitered = df_fitered.query("SO_NGAY >= @so_ngay_from and SO_NGAY <= @so_ngay_to")
+    cols = st.columns(2)
+    with cols[0]:
+        tong_thuong = df_fitered['TONG_THUONG'].sum()
+        st.metric("Tổng tiền thưởng nhóm Là",value=f"{tong_thuong:,.0f}")
+        ###
+        df_fitered['Tiền thưởng'] = df_fitered['TONG_THUONG'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+        df_fitered['Hiệu suất'] = df_fitered['EFF_TB'].apply(lambda x: f"{x:,.0%}")
+        fig = px.scatter(df_fitered,
+                         x='EFF_TB',
+                         y='TONG_THUONG',
+                         color='CHUC_VU',
+                         size='TONG_TGLV',
+                         hover_data={
+                             'MST' : True,
+                             'HO_TEN' : True,
+                             'TONG_TGLV' : True,
+                             'Hiệu suất' : True,
+                             'Tiền thưởng' : True,
+                             'TONG_THUONG' : False,
+                             'EFF_TB' : False,
+                             'CHUC_VU' : True
+                         }
+                         )
+        fig.update_layout(
+            title = 'Phân bổ tiền thưởng theo hiệu suất cá nhân',
+            xaxis_title = 'Hiệu suất cá nhân',
+            yaxis_title = 'Tiền thưởng'
+        )
+        fig.update_xaxes(
+            tickformat = ',.0%'
+        )
+        fig.update_traces(
+            marker = dict(line = dict(width = 1, color = 'white'))
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with cols[1]:
+        tb_thuong = df_fitered['TONG_THUONG'].mean()
+        st.metric("Trung bình tiền thưởng công nhân Là",value=f"{tb_thuong:,.0f}")
+        ###
+        df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
+        df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
+        ds_chuc_vu = ['Công nhân Là']
+        df_chuc_vu = df_chuc_vu[df_chuc_vu['CHUC_VU'].isin(ds_chuc_vu)]
+        fig = px.bar(
+            df_chuc_vu,
+            x='CHUC_VU',
+            y='TONG_THUONG',
+            color='XUONG',
+            barmode='group',
+            text='Trung bình thưởng'
+        )
+        fig.update_layout(
+            title = "Trung bình tiền thưởng theo chức danh",
+            xaxis_title = 'Chức danh',
+            yaxis_title = 'Trung bình tiền thưởng',
+            legend_title = 'Xưởng'
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with st.expander("Dữ liệu chi tiết"):
+        st.dataframe(df_fitered)
+    st.markdown("---")
+    df_nhom = get_data(DB='INCENTIVE',query=f"""
+                           SELECT * FROM THUONG_NHOM_LA_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND CHUYEN NOT LIKE '%99'
+                           ORDER BY NGAY,CHUYEN
+                           """)
+    df_nhom['NAM'] = df_nhom['NGAY'].apply(lambda x: x[:4])
+    df_nhom['THANG'] = df_nhom['NGAY'].apply(lambda x: x[5:7])
+    df_nhom= df_nhom.query("NAM == @sel_nam and THANG == @sel_thang")
+    df_nhom['Hiệu suất'] = df_nhom['EFF'].apply(lambda x: f"{x:,.0%}")
+    df_nhom['Thưởng nhóm'] = df_nhom['TONG_THUONG_NHOM'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+    ###
+    fig = px.line(
+        df_nhom,
+        x="NGAY",
+        y="EFF",
+        color= 'CHUYEN',
+        text=  'Hiệu suất'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Hiệu suất từng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Hiệu suất",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line1')
+    ###
+    fig = px.line(
+    df_nhom,
+    x="NGAY",
+    y="TONG_THUONG_NHOM",
+    color= 'CHUYEN',
+    text=  'Thưởng nhóm'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Tổng tiền thưởng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Thưởng nhóm",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line2')
+    with st.expander("Dữ liệu thưởng nhóm chi tiết"):
+        st.dataframe(df_nhom)
+if bao_cao == 'Công nhân QC2':
+    df = get_data(DB='INCENTIVE',query=f"""
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
+                           TONG_TGLV,EFF_TB,TONG_THUONG,SO_NGAY
+                           FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_TGLV_QC2 WHERE NHA_MAY = '{nha_may}'
+                           """)
+    df['CHUC_VU']=df['CHUC_VU'].str.replace(r'là','Là',regex=True)
+    df['XUONG'] = df['CHUYEN'].apply(lambda x: x[:1] +'TNC' if 'TNC' in x \
+                                    else x[:1] + 'NDC' if 'NDC' in x \
+                                        else x[:1] + 'P0' + x[1:2])
+    nam = df['NAM'].sort_values(ascending=False).unique()
+    sel_nam = st.sidebar.selectbox("Chọn năm",options=nam)
+    df_fitered = df[df['NAM'] == sel_nam]
+    thang = df_fitered['THANG'].sort_values(ascending=False).unique()
+    sel_thang = st.sidebar.selectbox("Chọn tháng",options=thang)
+    df_fitered = df_fitered[df_fitered['THANG'] == sel_thang]
+    so_ngay_min = df_fitered['SO_NGAY'].min()
+    so_ngay_max = df_fitered['SO_NGAY'].max()
+    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",value=(so_ngay_min,so_ngay_max))
+    df_fitered = df_fitered.query("SO_NGAY >= @so_ngay_from and SO_NGAY <= @so_ngay_to")
+    cols = st.columns(2)
+    with cols[0]:
+        tong_thuong = df_fitered['TONG_THUONG'].sum()
+        st.metric("Tổng tiền thưởng nhóm QC2",value=f"{tong_thuong:,.0f}")
+        ###
+        df_fitered['Tiền thưởng'] = df_fitered['TONG_THUONG'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+        df_fitered['Hiệu suất'] = df_fitered['EFF_TB'].apply(lambda x: f"{x:,.0%}")
+        fig = px.scatter(df_fitered,
+                         x='EFF_TB',
+                         y='TONG_THUONG',
+                         color='CHUC_VU',
+                         size='TONG_TGLV',
+                         hover_data={
+                             'MST' : True,
+                             'HO_TEN' : True,
+                             'TONG_TGLV' : True,
+                             'Hiệu suất' : True,
+                             'Tiền thưởng' : True,
+                             'TONG_THUONG' : False,
+                             'EFF_TB' : False,
+                             'CHUC_VU' : True
+                         }
+                         )
+        fig.update_layout(
+            title = 'Phân bổ tiền thưởng theo hiệu suất cá nhân',
+            xaxis_title = 'Hiệu suất cá nhân',
+            yaxis_title = 'Tiền thưởng'
+        )
+        fig.update_xaxes(
+            tickformat = ',.0%'
+        )
+        fig.update_traces(
+            marker = dict(line = dict(width = 1, color = 'white'))
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with cols[1]:
+        tb_thuong = df_fitered['TONG_THUONG'].mean()
+        st.metric("Trung bình tiền thưởng công nhân QC2",value=f"{tb_thuong:,.0f}")
+        ###
+        df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
+        df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
+        ds_chuc_vu = ['Công nhân kiểm hàng Là']
+        df_chuc_vu = df_chuc_vu[df_chuc_vu['CHUC_VU'].isin(ds_chuc_vu)]
+        fig = px.bar(
+            df_chuc_vu,
+            x='CHUC_VU',
+            y='TONG_THUONG',
+            color='XUONG',
+            barmode='group',
+            text='Trung bình thưởng'
+        )
+        fig.update_layout(
+            title = "Trung bình tiền thưởng theo chức danh",
+            xaxis_title = 'Chức danh',
+            yaxis_title = 'Trung bình tiền thưởng',
+            legend_title = 'Xưởng'
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with st.expander("Dữ liệu chi tiết"):
+        st.dataframe(df_fitered)
+    st.markdown("---")
+    df_nhom = get_data(DB='INCENTIVE',query=f"""
+                           SELECT * FROM THUONG_NHOM_QC2_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%99'
+                           ORDER BY NGAY,NHOM
+                           """)
+    df_nhom['NAM'] = df_nhom['NGAY'].apply(lambda x: x[:4])
+    df_nhom['THANG'] = df_nhom['NGAY'].apply(lambda x: x[5:7])
+    df_nhom= df_nhom.query("NAM == @sel_nam and THANG == @sel_thang")
+    df_nhom['Hiệu suất'] = df_nhom['EFF'].apply(lambda x: f"{x:,.0%}")
+    df_nhom['Thưởng nhóm'] = df_nhom['TONG_THUONG_NHOM'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+    ###
+    fig = px.line(
+        df_nhom,
+        x="NGAY",
+        y="EFF",
+        color= 'NHOM',
+        text=  'Hiệu suất'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Hiệu suất từng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Hiệu suất",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line1')
+    ###
+    fig = px.line(
+    df_nhom,
+    x="NGAY",
+    y="TONG_THUONG_NHOM",
+    color= 'NHOM',
+    text=  'Thưởng nhóm'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Tổng tiền thưởng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Thưởng nhóm",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line2')
+    with st.expander("Dữ liệu thưởng nhóm chi tiết"):
+        st.dataframe(df_nhom)
+if bao_cao == 'Công nhân đóng gói':
+    df = get_data(DB='INCENTIVE',query=f"""
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
+                           TGLV as TONG_TGLV,TONG_THUONG,SO_NGAY
+                           FROM TONG_HOP_TGLV_TONG_THUONG_CN_DONG_GOI WHERE NHA_MAY = '{nha_may}'
+                           """)
+    df['XUONG'] = df['CHUYEN'].apply(lambda x: x[:1] +'TNC' if 'TNC' in x \
+                                    else x[:1] + 'NDC' if 'NDC' in x \
+                                        else x[:1] + 'P0' + x[1:2])
+    nam = df['NAM'].sort_values(ascending=False).unique()
+    sel_nam = st.sidebar.selectbox("Chọn năm",options=nam)
+    df_fitered = df[df['NAM'] == sel_nam]
+    thang = df_fitered['THANG'].sort_values(ascending=False).unique()
+    sel_thang = st.sidebar.selectbox("Chọn tháng",options=thang)
+    df_fitered = df_fitered[df_fitered['THANG'] == sel_thang]
+    so_ngay_min = df_fitered['SO_NGAY'].min()
+    so_ngay_max = df_fitered['SO_NGAY'].max()
+    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",value=(so_ngay_min,so_ngay_max))
+    df_fitered = df_fitered.query("SO_NGAY >= @so_ngay_from and SO_NGAY <= @so_ngay_to")
+    cols = st.columns(2)
+    with cols[0]:
+        tong_thuong = df_fitered['TONG_THUONG'].sum()
+        st.metric("Tổng tiền thưởng nhóm đóng gói",value=f"{tong_thuong:,.0f}")
+        ###
+        df_fitered['Tiền thưởng'] = df_fitered['TONG_THUONG'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+        fig = px.scatter(df_fitered,
+                         x='SO_NGAY',
+                         y='TONG_THUONG',
+                         color='CHUC_VU',
+                         size='TONG_TGLV',
+                         hover_data={
+                             'MST' : True,
+                             'HO_TEN' : True,
+                             'TONG_TGLV' : True,
+                             'Tiền thưởng' : True,
+                             'TONG_THUONG' : False
+                         }
+                         )
+        fig.update_layout(
+            title = 'Phân bổ tiền thưởng theo số ngày làm việc',
+            xaxis_title = 'Số ngày làm việc',
+            yaxis_title = 'Tiền thưởng',
+            legend_title = 'Chức danh'
+        )
+        fig.update_traces(
+            marker = dict(line = dict(width = 1, color = 'white'))
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with cols[1]:
+        tb_thuong = df_fitered['TONG_THUONG'].mean()
+        st.metric("Trung bình tiền thưởng công nhân đóng gói",value=f"{tb_thuong:,.0f}")
+        ###
+        df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
+        df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
+        ds_chuc_vu = ['Công nhân đóng gói']
+        df_chuc_vu = df_chuc_vu[df_chuc_vu['CHUC_VU'].isin(ds_chuc_vu)]
+        fig = px.bar(
+            df_chuc_vu,
+            x='CHUC_VU',
+            y='TONG_THUONG',
+            color='XUONG',
+            barmode='group',
+            text='Trung bình thưởng'
+        )
+        fig.update_layout(
+            title = "Trung bình tiền thưởng theo chức danh",
+            xaxis_title = 'Chức danh',
+            yaxis_title = 'Trung bình tiền thưởng',
+            legend_title = 'Xưởng'
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with st.expander("Dữ liệu chi tiết"):
+        st.dataframe(df_fitered)
+    st.markdown("---")
+    df_nhom = get_data(DB='INCENTIVE',query=f"""
+                           SELECT * FROM THUONG_NHOM_DONG_GOI_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%99'
+                           ORDER BY NGAY,NHOM
+                           """)
+    df_nhom['NAM'] = df_nhom['NGAY'].apply(lambda x: x[:4])
+    df_nhom['THANG'] = df_nhom['NGAY'].apply(lambda x: x[5:7])
+    df_nhom= df_nhom.query("NAM == @sel_nam and THANG == @sel_thang")
+    df_nhom['Hiệu suất'] = df_nhom['EFF'].apply(lambda x: f"{x:,.0%}")
+    df_nhom['Thưởng nhóm'] = df_nhom['TONG_THUONG_NHOM'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+    ###
+    fig = px.line(
+        df_nhom,
+        x="NGAY",
+        y="EFF",
+        color= 'NHOM',
+        text=  'Hiệu suất'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Hiệu suất từng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Hiệu suất",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line1')
+    ###
+    fig = px.line(
+    df_nhom,
+    x="NGAY",
+    y="TONG_THUONG_NHOM",
+    color= 'NHOM',
+    text=  'Thưởng nhóm'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Hiệu suất từng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Thưởng nhóm",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line2')
+    with st.expander("Dữ liệu thưởng nhóm chi tiết"):
+        st.dataframe(df_nhom)
+if bao_cao == 'Công nhân NDC':
+    df = get_data(DB='INCENTIVE',query=f"""
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
+                           TGLV as TONG_TGLV,TONG_THUONG,SO_NGAY
+                           FROM TONG_HOP_TGLV_TONG_THUONG_CN_NDC WHERE NHA_MAY = '{nha_may}'
+                           """)
+    df['XUONG'] = df['CHUYEN'].apply(lambda x: x[:1] +'TNC' if 'TNC' in x \
+                                    else x[:1] + 'NDC' if 'NDC' in x \
+                                        else x[:1] + 'P0' + x[1:2])
+    nam = df['NAM'].sort_values(ascending=False).unique()
+    sel_nam = st.sidebar.selectbox("Chọn năm",options=nam)
+    df_fitered = df[df['NAM'] == sel_nam]
+    thang = df_fitered['THANG'].sort_values(ascending=False).unique()
+    sel_thang = st.sidebar.selectbox("Chọn tháng",options=thang)
+    df_fitered = df_fitered[df_fitered['THANG'] == sel_thang]
+    so_ngay_min = df_fitered['SO_NGAY'].min()
+    so_ngay_max = df_fitered['SO_NGAY'].max()
+    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",value=(so_ngay_min,so_ngay_max))
+    df_fitered = df_fitered.query("SO_NGAY >= @so_ngay_from and SO_NGAY <= @so_ngay_to")
+    cols = st.columns(2)
+    with cols[0]:
+        tong_thuong = df_fitered['TONG_THUONG'].sum()
+        st.metric("Tổng tiền thưởng nhóm dò kim",value=f"{tong_thuong:,.0f}")
+        ###
+        df_fitered['Tiền thưởng'] = df_fitered['TONG_THUONG'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+        fig = px.scatter(df_fitered,
+                         x='SO_NGAY',
+                         y='TONG_THUONG',
+                         color='CHUC_VU',
+                         size='TONG_TGLV',
+                         hover_data={
+                             'MST' : True,
+                             'HO_TEN' : True,
+                             'TONG_TGLV' : True,
+                             'Tiền thưởng' : True,
+                             'TONG_THUONG' : False
+                         }
+                         )
+        fig.update_layout(
+            title = 'Phân bổ tiền thưởng theo số ngày làm việc',
+            xaxis_title = 'Số ngày làm việc',
+            yaxis_title = 'Tiền thưởng',
+            legend_title = 'Chức danh'
+        )
+        fig.update_traces(
+            marker = dict(line = dict(width = 1, color = 'white'))
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with cols[1]:
+        tb_thuong = df_fitered['TONG_THUONG'].mean()
+        st.metric("Trung bình tiền thưởng công nhân dò kim",value=f"{tb_thuong:,.0f}")
+        ###
+        df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
+        df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
+        ds_chuc_vu = ['Công nhân dò kim']
+        df_chuc_vu = df_chuc_vu[df_chuc_vu['CHUC_VU'].isin(ds_chuc_vu)]
+        fig = px.bar(
+            df_chuc_vu,
+            x='CHUC_VU',
+            y='TONG_THUONG',
+            color='XUONG',
+            barmode='group',
+            text='Trung bình thưởng'
+        )
+        fig.update_layout(
+            title = "Trung bình tiền thưởng theo chức danh",
+            xaxis_title = 'Chức danh',
+            yaxis_title = 'Trung bình tiền thưởng',
+            legend_title = 'Xưởng'
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        st.plotly_chart(fig,use_container_width=True)
+    with st.expander("Dữ liệu chi tiết"):
+        st.dataframe(df_fitered)
+    st.markdown("---")
+    df_nhom = get_data(DB='INCENTIVE',query=f"""
+                           SELECT * FROM THUONG_NHOM_NDC_HANG_NGAY WHERE NHA_MAY = '{nha_may}' AND NHOM NOT LIKE '%99'
+                           ORDER BY NGAY,NHOM
+                           """)
+    df_nhom['NAM'] = df_nhom['NGAY'].apply(lambda x: x[:4])
+    df_nhom['THANG'] = df_nhom['NGAY'].apply(lambda x: x[5:7])
+    df_nhom= df_nhom.query("NAM == @sel_nam and THANG == @sel_thang")
+    df_nhom['Thưởng nhóm'] = df_nhom['THUONG_NHOM'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+    ###
+    fig = px.line(
+    df_nhom,
+    x="NGAY",
+    y="THUONG_NHOM",
+    color= 'NHOM',
+    text=  'Thưởng nhóm'
+    )
+    fig.update_xaxes(
+        dtick = 'D1',
+        tickformat = '%d/%m'
+    )
+    fig.update_layout(
+        title = 'Hiệu suất từng nhóm theo ngày',
+        xaxis_title = "Ngày",
+        yaxis_title = "Thưởng nhóm",
+        legend_title = 'Nhóm'
+    )
+    fig.update_traces(
+        textposition = 'top center'
+    )
+    st.plotly_chart(fig,use_container_width=True,key='line2')
+    with st.expander("Dữ liệu thưởng nhóm chi tiết"):
+        st.dataframe(df_nhom)
+if bao_cao == 'Công nhân phụ':
+    df = get_data(DB='INCENTIVE',query=f"""
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
+                           TGLV as TONG_TGLV,TONG_THUONG,SO_NGAY
+                           FROM TONG_HOP_TGLV_TONG_THUONG_CN_PHU WHERE NHA_MAY = '{nha_may}'
+                           """)
+    df['XUONG'] = df['CHUYEN'].apply(lambda x: x[:1] +'TNC' if 'TNC' in x \
+                                    else x[:1] + 'NDC' if 'NDC' in x \
+                                        else x[:1] + 'P0' + x[1:2])
+    nam = df['NAM'].sort_values(ascending=False).unique()
+    sel_nam = st.sidebar.selectbox("Chọn năm",options=nam)
+    df_fitered = df[df['NAM'] == sel_nam]
+    thang = df_fitered['THANG'].sort_values(ascending=False).unique()
+    sel_thang = st.sidebar.selectbox("Chọn tháng",options=thang)
+    df_fitered = df_fitered[df_fitered['THANG'] == sel_thang]
+    so_ngay_min = df_fitered['SO_NGAY'].min()
+    so_ngay_max = df_fitered['SO_NGAY'].max()
+    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",value=(so_ngay_min,so_ngay_max))
+    df_fitered = df_fitered.query("SO_NGAY >= @so_ngay_from and SO_NGAY <= @so_ngay_to")
+    cols = st.columns(2)
+    with cols[0]:
+        tong_thuong = df_fitered['TONG_THUONG'].sum()
+        st.metric("Tổng tiền thưởng nhóm công nhân phụ",value=f"{tong_thuong:,.0f}")
+    with cols[1]:
+        tb_thuong = df_fitered['TONG_THUONG'].mean()
+        st.metric("Trung bình tiền thưởng công nhân phụ",value=f"{tb_thuong:,.0f}")
+    ###
+    df_fitered['Tiền thưởng'] = df_fitered['TONG_THUONG'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+    fig = px.scatter(df_fitered,
+                        x='TONG_TGLV',
+                        y='TONG_THUONG',
+                        color='CHUC_VU',
+                        size='SO_NGAY',
+                        hover_data={
+                            'MST' : True,
+                            'HO_TEN' : True,
+                            'TONG_TGLV' : True,
+                            'Tiền thưởng' : True,
+                            'TONG_THUONG' : False
+                        }
+                        )
+    fig.update_layout(
+        title = 'Phân bổ tiền thưởng theo số giờ làm việc',
+        xaxis_title = 'Số giờ làm việc',
+        yaxis_title = 'Tiền thưởng',
+        legend_title = 'Chức danh'
+    )
+    fig.update_traces(
+        marker = dict(line = dict(width = 1, color = 'white'))
+    )
+    st.plotly_chart(fig,use_container_width=True)
+    ###
+    df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
+    df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
+    fig = px.bar(
+        df_chuc_vu,
+        x='CHUC_VU',
+        y='TONG_THUONG',
+        color='XUONG',
+        barmode='group',
+        # text='Trung bình thưởng'
+    )
+    fig.update_layout(
+        title = "Trung bình tiền thưởng theo chức danh",
+        xaxis_title = 'Chức danh',
+        yaxis_title = 'Trung bình tiền thưởng',
+        legend_title = 'Xưởng'
+    )
+    fig.update_traces(
+        textposition = 'outside'
+    )
+    st.plotly_chart(fig,use_container_width=True)
+    with st.expander("Dữ liệu chi tiết"):
+        st.dataframe(df_fitered)
+
+if bao_cao == 'Quản lý':
+    df = get_data(DB='INCENTIVE',query=f"""
+                           SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
+                           TGLV as TONG_TGLV,TONG_THUONG,SO_NGAY
+                           FROM TONG_HOP_TGLV_TONG_THUONG_QUAN_LY WHERE NHA_MAY = '{nha_may}'
+                           """)
+    df['XUONG'] = df['CHUYEN'].apply(lambda x: x[:1] +'TNC' if 'TNC' in x \
+                                    else x[:1] + 'NDC' if 'NDC' in x \
+                                        else x[:1] + 'P0' + x[1:2])
+    nam = df['NAM'].sort_values(ascending=False).unique()
+    sel_nam = st.sidebar.selectbox("Chọn năm",options=nam)
+    df_fitered = df[df['NAM'] == sel_nam]
+    thang = df_fitered['THANG'].sort_values(ascending=False).unique()
+    sel_thang = st.sidebar.selectbox("Chọn tháng",options=thang)
+    df_fitered = df_fitered[df_fitered['THANG'] == sel_thang]
+    so_ngay_min = df_fitered['SO_NGAY'].min()
+    so_ngay_max = df_fitered['SO_NGAY'].max()
+    so_ngay_from,so_ngay_to = st.sidebar.slider("Chọn số ngày làm việc",value=(so_ngay_min,so_ngay_max))
+    df_fitered = df_fitered.query("SO_NGAY >= @so_ngay_from and SO_NGAY <= @so_ngay_to")
+    cols = st.columns(2)
+    with cols[0]:
+        tong_thuong = df_fitered['TONG_THUONG'].sum()
+        st.metric("Tổng tiền thưởng nhóm quản lý",value=f"{tong_thuong:,.0f}")
+    with cols[1]:
+        tb_thuong = df_fitered['TONG_THUONG'].mean()
+        st.metric("Trung bình tiền thưởng quản lý",value=f"{tb_thuong:,.0f}")
+    ###
+    df_fitered['Tiền thưởng'] = df_fitered['TONG_THUONG'].apply(lambda x: f"{x/1_000:,.0f} nghìn")
+    fig = px.scatter(df_fitered,
+                        x='TONG_TGLV',
+                        y='TONG_THUONG',
+                        color='CHUC_VU',
+                        size='SO_NGAY',
+                        hover_data={
+                            'MST' : True,
+                            'HO_TEN' : True,
+                            'TONG_TGLV' : True,
+                            'Tiền thưởng' : True,
+                            'TONG_THUONG' : False
+                        }
+                        )
+    fig.update_layout(
+        title = 'Phân bổ tiền thưởng theo số giờ làm việc',
+        xaxis_title = 'Số giờ làm việc',
+        yaxis_title = 'Tiền thưởng',
+        legend_title = 'Chức danh'
+    )
+    fig.update_traces(
+        marker = dict(line = dict(width = 1, color = 'white'))
+    )
+    st.plotly_chart(fig,use_container_width=True)
+    ###
+    df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
+    df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
+    fig = px.bar(
+        df_chuc_vu,
+        x='CHUC_VU',
+        y='TONG_THUONG',
+        color='XUONG',
+        barmode='group',
+        # text='Trung bình thưởng'
+    )
+    fig.update_layout(
+        title = "Trung bình tiền thưởng theo chức danh",
+        xaxis_title = 'Chức danh',
+        yaxis_title = 'Trung bình tiền thưởng',
+        legend_title = 'Xưởng'
+    )
+    fig.update_traces(
+        textposition = 'outside'
+    )
+    st.plotly_chart(fig,use_container_width=True)
+    with st.expander("Dữ liệu chi tiết"):
+        st.dataframe(df_fitered)
