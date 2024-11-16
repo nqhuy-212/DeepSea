@@ -19,10 +19,11 @@ st.markdown(
 )
 
 #---PAGE SETUP---
-login_page = st.Page(
-    page="views/summary.py",
-    title= "Báo cáo tổng hợp",
-    icon= ':material/bar_chart:',
+
+rank_page = st.Page(
+    page="views/rank.py",
+    title= "Bảng xếp hạng",
+    icon= ':material/emoji_events:',
     default= True
 )
 
@@ -30,7 +31,6 @@ sumary_page = st.Page(
     page="views/summary.py",
     title= "Báo cáo tổng hợp",
     icon= ':material/bar_chart:',
-    # default= True
 )
 
 incentive_page = st.Page(
@@ -96,7 +96,7 @@ else:
     # if st.sidebar.button("Làm mới dữ liệu"):
     #     st.rerun()
     pg = st.navigation(pages={
-    'Chọn trang' :[sumary_page,incentive_page,hr_page,tnc_page,salary_page,QCO_page]})   
+    'Chọn trang' :[rank_page,sumary_page,incentive_page,hr_page,tnc_page,salary_page,QCO_page]})   
     pg.run()
 
 

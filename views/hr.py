@@ -224,7 +224,7 @@ df_tuyen_moi = get_data("HR",
                         JOB_TITLE_VN AS CHUC_DANH,HEADCOUNT_CATEGORY AS KOIS,DATEDIFF(YEAR,NGAY_SINH,GETDATE()) AS TUOI,QUAN_HUYEN,TINH_TP
                         FROM DANH_SACH_CBCNV WHERE NGAY_VAO BETWEEN '{start_date}' AND '{end_date}' AND FACTORY = '{nha_may}'
                         """)
-df_tuyen_moi['nhom_tuoi'] = df_tuyen_moi['TUOI'].apply(lambda x: "Trên 45 tuổi" if x > 45 else "36-45 tuổi" if x > 35 else "26-35 tuổi" if x > 25 else "18-25 tuôi")
+df_tuyen_moi['nhom_tuoi'] = df_tuyen_moi['TUOI'].apply(lambda x: "Trên 45 tuổi" if x > 45 else "36-45 tuổi" if x > 35 else "26-35 tuổi" if x > 25 else "18-25 tuổi")
 df_tuyen_moi['Phan_loai'] = df_tuyen_moi['CHUC_DANH'] .apply(
     lambda x: "Công nhân may" if (
         (x == 'Công nhân may công nghiệp') or 
@@ -236,11 +236,13 @@ tong_tuyen_moi = df_tuyen_moi['MST'].count()
 st.info(f"Tổng tuyển mới : {tong_tuyen_moi}")
 cols = st.columns([1, 1, 1])
 with cols[0]:
+    # category_orders= ['18-25 tuổi', '26-35 tuổi', '36-45 tuổi', 'Trên 45 tuổi']
+    # df_tuyen_moi['Phan_loai'] = pd.Categorical(df_tuyen_moi['Phan_loai'], categories=category_orders, ordered=True)
     fig = px.pie(
         df_tuyen_moi,
         color='Phan_loai',
         names= 'Phan_loai' ,
-        title= "Tỉ lệ phân bổ theo công việc" 
+        title= "Tỉ lệ phân bổ theo công việc"     
     )
     fig.update_traces(
         textinfo = 'percent+value',
