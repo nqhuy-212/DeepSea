@@ -97,7 +97,7 @@ folium.Marker(
     icon=folium.Icon(color="red", icon="home", prefix="fa")
     ).add_to(m)
 
-st.header("Bản đồ")
+st.header("Bản đồ phân bổ công nhân")
 st_folium(m,width='1500',height='600')
 
 ## phuong an 2
