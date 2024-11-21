@@ -1,4 +1,5 @@
 import streamlit as st 
+import pandas as pd
 
 st.logo("logo_white.png",size= 'large')
 st.markdown(

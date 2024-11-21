@@ -50,8 +50,11 @@ df_hr = get_data("HR",f"""SELECT Ltrim(Rtrim(Tinh_TP)) as Tinh_TP,Ltrim(Rtrim(Qu
                  """)
 # st.dataframe(df_hr)
 df_hr['NAME_1'] = df_hr['Tinh_TP'].str.replace(' ','',regex=True)
+df_hr['NAME_1'] = df_hr['NAME_1'].str.replace('Tỉnh|tỉnh','',regex=True)
 df_hr['NAME_2'] = df_hr['Quan_huyen'].str.replace(' ','',regex=True)
+df_hr['NAME_2'] = df_hr['NAME_2'].str.replace('Huyện|huyện','',regex=True)
 df_hr['NAME_3'] = df_hr['Phuong_xa'].str.replace(' ','',regex=True)
+df_hr['NAME_3'] = df_hr['NAME_3'].str.replace('Xã|xã','',regex=True)
 
 if nha_may == 'NT1':
     center = (20.92329180823736, 106.6506876954207)
@@ -74,7 +77,7 @@ folium.Choropleth(
     key_on="feature.properties.NAME_3",  
     fill_color="YlOrRd",
     fill_opacity=0.7,
-    line_opacity=0.2,
+    line_opacity=0.4,
     legend_name="Số công nhân"
 ).add_to(m)
 tooltip = folium.GeoJson(
@@ -99,6 +102,7 @@ folium.Marker(
 
 st.header("Bản đồ phân bổ công nhân")
 st_folium(m,width='1500',height='600')
+
 
 ## phuong an 2
 # df_loction = pd.read_csv("location.csv",encoding="utf-8")
