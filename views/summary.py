@@ -9,6 +9,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from load_data import get_data
+import time
 
 st.markdown(
     """
@@ -363,7 +364,9 @@ st.plotly_chart(fig,use_container_width=True)
 with st.expander("Dữ liệu chi tiết"):
     st.dataframe(df4,hide_index=True)
 
-
+# while True:
+#     time.sleep(30)
+#     st.rerun()
 
 
 

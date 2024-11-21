@@ -63,6 +63,12 @@ QCO_page = st.Page(
     icon= ':material/fast_forward:'
 )
 
+map_page = st.Page(
+    page="views/map.py",
+    title= "Bản đồ - CCTV",
+    icon= ':material/public:'
+)
+
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
@@ -96,7 +102,7 @@ else:
     # if st.sidebar.button("Làm mới dữ liệu"):
     #     st.rerun()
     pg = st.navigation(pages={
-    'Chọn trang' :[rank_page,sumary_page,incentive_page,hr_page,tnc_page,salary_page,QCO_page]})   
+    'Chọn trang' :[rank_page,sumary_page,incentive_page,hr_page,tnc_page,salary_page,QCO_page,map_page]})   
     pg.run()
 
 
