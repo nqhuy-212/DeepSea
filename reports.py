@@ -24,13 +24,13 @@ rank_page = st.Page(
     page="views/rank.py",
     title= "Bảng xếp hạng",
     icon= ':material/emoji_events:',
-    default= True
 )
 
 sumary_page = st.Page(
     page="views/summary.py",
     title= "Báo cáo tổng hợp",
     icon= ':material/bar_chart:',
+    default= True
 )
 
 incentive_page = st.Page(
@@ -85,7 +85,7 @@ if not st.session_state.logged_in:
         
         cols = st.columns(3)
         with cols[1]:
-            st.image("logo_white.png",use_column_width=True)
+            st.image("logo_white.png",use_container_width=True)
         with st.form("Đăng nhập"):
             factory = st.selectbox("Chọn nhà máy",options=['NT1','NT2'])
             username = st.text_input("Tài khoản", placeholder="Nhập vào mã chấm công")
@@ -96,7 +96,7 @@ if not st.session_state.logged_in:
 
             # Perform actions after form submission
             if submit_button:
-                df_login = get_data("HR",f"SELECT * FROM Nhanvien WHERE macongty = '{factory}' AND masothe = '{username}' AND matkhau = '{password}'")
+                df_login = get_data("HR",f"SELECT * FROM Nhanvien WHERE macongty = '{factory}' AND masothe = '{username}' AND matkhau = '{password}' AND deepsea = 'x'")
                 if df_login.shape[0] > 0:
                     st.session_state.logged_in = True
                     st.session_state.factory = factory
@@ -108,7 +108,7 @@ else:
     # if st.sidebar.button("Làm mới dữ liệu"):
     #     st.rerun()
     pg = st.navigation(pages={
-    'Chọn trang' :[rank_page,sumary_page,incentive_page,hr_page,tnc_page,salary_page,QCO_page,map_page,chat_page]})   
+    'Chọn trang' :[sumary_page,incentive_page,hr_page,tnc_page,salary_page,QCO_page,map_page,rank_page]})   
     pg.run()
 
 

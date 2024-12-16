@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from load_data import get_data
 import time
+import numpy as np
 
 st.markdown(
     """
@@ -306,7 +307,14 @@ df_line_eff = df4.groupby(by = ['WorkDate','Line']).agg({
 df_line_eff['Eff_A'] = df_line_eff['SAH_A']/df_line_eff['Total_hours_A']
 
 df_line_eff_pivot = pd.pivot_table(data=df_line_eff,index='Line',columns='WorkDate',values='Eff_A')
+df4['Style_P_short'] = df4['Style_P'].str[-4:]
+df_line_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P')
+df_line_short_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P_short')
+df_line_SAH = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAH_A')
 
+customdata = np.dstack([df_line_style.values, df_line_SAH.values])
+
+#Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
     df_line_eff_pivot,
     color_continuous_scale= "RdYlGn",
@@ -327,19 +335,134 @@ fig.update_layout(
     title = "Biểu đồ nhiệt - Hiệu suất chuyền theo ngày",
     xaxis_title = "Ngày",
     yaxis_title = "Chuyền",
+    height = num_row * row_hight,
+)
+fig.update_traces(
+    customdata=customdata,
+    texttemplate='%{z:.1%}',
+    textfont=dict(size=14),
+    zmin=0,
+    zmax=1,
+    hovertemplate=(
+        "Style: %{customdata[0]}<br>"
+        "SAH: %{customdata[1]:.0f}"
+    )
+)
+st.plotly_chart(fig,use_container_width=True,key='heatmap0')
+#Vẽ biểu đồ nhiệt theo short style
+fig = px.imshow(
+    df_line_eff_pivot,
+    color_continuous_scale= "RdYlGn",
+    text_auto= True)
+fig.update_xaxes(
+    dtick = 'D1',
+    tickformat = '%d/%m',
+    tickfont = dict(size = 12)
+)
+fig.update_yaxes(
+    tickfont = dict(size = 14),
+    dtick = 'D1'
+)
+num_row = df_line_eff_pivot.shape[0]
+row_hight = 35
+fig.update_layout(
+    title = "Style_P",
+    xaxis_title = "Ngày",
+    yaxis_title = "Chuyền",
     height = num_row * row_hight
 )
 fig.update_traces(
-    texttemplate='%{z:.1%}',
-    textfont = dict(size = 14),
-    zmin = 0,
-    zmax = 1
+    customdata = customdata,
+    textfont=dict(size=14),
+    zmin=0,
+    zmax=1,
+    hovertemplate=(
+        "Hiệu suất: %{z:.1%}<br>"
+        "SAH: %{customdata[1]:.0f}"
+    ),
+    text=df_line_short_style.values, 
+    texttemplate="%{text}"
 )
-
 st.plotly_chart(fig,use_container_width=True,key='heatmap1')
+#Vẽ biểu đồ nhiệt theo SAH
+fig = px.imshow(
+    df_line_eff_pivot,
+    color_continuous_scale= "RdYlGn",
+    text_auto= True)
+fig.update_xaxes(
+    dtick = 'D1',
+    tickformat = '%d/%m',
+    tickfont = dict(size = 12)
+)
+fig.update_yaxes(
+    tickfont = dict(size = 14),
+    dtick = 'D1'
+)
+num_row = df_line_eff_pivot.shape[0]
+row_hight = 35
+fig.update_layout(
+    title = "SAH",
+    xaxis_title = "Ngày",
+    yaxis_title = "Chuyền",
+    height = num_row * row_hight
+)
+fig.update_traces(
+    customdata = customdata,
+    textfont=dict(size=14),
+    zmin=0,
+    zmax=1,
+    hovertemplate=(
+        "Hiệu suất: %{z:.1%}<br>"
+        "Style: %{customdata[0]}"
+    ),
+    text=df_line_SAH.values, 
+    texttemplate="%{text:.0f}"
+)
+st.plotly_chart(fig,use_container_width=True,key='heatmap2')
+# #Vẽ biểu đồ nhiệt theo Eff - Style - SAH
+# df4['Eff_formated'] = (df4['SAH_A']/df4['Total_hours_A']).apply(lambda x: f"{x:.0%}")
+# df4['SAH_A_formated'] = df4['SAH_A'].apply(lambda x: f"{x:.0f}")
+# df_line_eff_formated = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Eff_formated')
+# df_line_SAH_formated= pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAH_A_formated')
+
+# text_data = df_line_short_style + "<br>" + df_line_eff_formated + "<br>" + df_line_SAH_formated
+# fig = px.imshow(
+#     df_line_eff_pivot,
+#     color_continuous_scale= "RdYlGn",
+#     text_auto= True)
+# fig.update_xaxes(
+#     dtick = 'D1',
+#     tickformat = '%d/%m',
+#     tickfont = dict(size = 12)
+# )
+# fig.update_yaxes(
+#     tickfont = dict(size = 14),
+#     dtick = 'D1'
+# )
+# num_row = df_line_eff_pivot.shape[0]
+# row_hight = 70
+# fig.update_layout(
+#     title = "SAH",
+#     xaxis_title = "Ngày",
+#     yaxis_title = "Chuyền",
+#     height = num_row * row_hight
+# )
+# fig.update_traces(
+#     customdata = customdata,
+#     textfont=dict(size=14),
+#     zmin=0,
+#     zmax=1,
+#     hovertemplate=(
+#         "Hiệu suất: %{z:.1%}<br>"
+#         "Style: %{customdata[0]}"
+#     ),
+#     text=text_data.values, 
+#     texttemplate="%{text}"
+# )
+# st.plotly_chart(fig,use_container_width=True,key='heatmap3')
 
 ## Heatmap style theo chuyền , ngày
-df_line_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P')
+
 fig = px.density_heatmap(
     df_line_style,
     color_continuous_scale= "Blues",
