@@ -19,6 +19,26 @@ def get_data(DB,query):
     df = pd.read_sql(query, conn)
     conn.close()
     return df
+
+def exec_query(DB,query):
+    conn = pyodbc.connect(
+        'DRIVER={SQL Server};'
+        f'SERVER={os.getenv("SERVER")};'
+        f'DATABASE={DB};'
+        f'UID={os.getenv("UID")};'
+        f'PWD={os.getenv("PASSWORD")}'
+    )
+    cursor = conn.cursor()
+    cursor.execute(query)
+    columns = [column[0] for column in cursor.description]
+
+    # Fetch all rows
+    rows = cursor.fetchall()
+
+    # Convert to a DataFrame
+    df = pd.DataFrame.from_records(rows, columns=columns)
+    conn.close()
+    return df
 #######
 # import streamlit as st
 # from selenium import webdriver

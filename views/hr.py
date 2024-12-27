@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px 
 import plotly.graph_objects as go 
 from datetime import date,datetime,timedelta
-from load_data import get_data
+from load_data import get_data,exec_query
 
 st.logo("logo_white.png",size= 'large')
 st.markdown(
@@ -27,6 +27,7 @@ st.markdown(f'<h1 class="centered-title">BÁO CÁO NHÂN SỰ ({nha_may})</h1>',
 df_danglamviec = get_data(DB='HR',query=f"Select * from Danh_sach_CBCNV where trang_thai_lam_viec = N'Đang làm việc' and Factory = '{nha_may}'")
 df_nghithaisan = get_data(DB='HR',query=f"Select * from Danh_sach_CBCNV where trang_thai_lam_viec = N'Nghỉ thai sản' and Factory = '{nha_may}'")
 df_dilam = get_data(DB='HR',query=f"Select * from Cham_cong_sang where Factory = '{nha_may}' and Gio_vao is not null")
+df_TGLV = get_data('HR',f"SELECT * FROM TONG_TGLV_DEEPSEA WHERE NHA_MAY = '{nha_may}'")
 
 #các tính toán cần thiết
 tong_hc = df_danglamviec['MST'].count()
@@ -131,6 +132,7 @@ with cols[2]:
         title = "Phân bổ theo địa lý",
     ) 
     st.plotly_chart(fig,use_container_width=True)
+
 st.markdown("---")
 st.subheader("Xu hướng biến động nhân sự")
 df_RP_HR = get_data(DB='HR',query=f"Select * from RP_HR_TONG_HOP_15_PHUT where NHA_MAY = '{nha_may}' AND NGAY > = '2024-09-01'")
@@ -216,6 +218,68 @@ st.plotly_chart(fig,use_container_width=True)
 #     # st.dataframe(df_RP_HR_pivot)
 #     # st.dataframe(df_RP_HR_pivot_factory)
 # ####
+st.markdown("---")
+st.subheader(f"Tổng thời gian làm việc {nha_may} (giờ) + số công nhân (CN May + TNC01)")
+df_TGLV['NGAY'] = pd.to_datetime(df_TGLV['NGAY'])
+df_TGLV = df_TGLV.query('NGAY >= @start_date and NGAY <= @end_date')
+df_TGLV = df_TGLV.sort_values('NGAY',ascending=True)
+df_TGLV['Tổng số giờ'] = df_TGLV['HC'] + df_TGLV['OT'] + df_TGLV['OT_CN']
+
+cols = st.columns(5)
+with cols[0]:
+    st.info("Tổng TGLV")
+    tong_TGLV = df_TGLV['Tổng số giờ'].sum()
+    st.metric(f"{nha_may}",value=f"{tong_TGLV:,.0f}")
+    if nha_may != 'NT1':
+        tong_TGLV_BL1 = df_TGLV[df_TGLV['BLOCK'] == 'BL1']['Tổng số giờ'].sum()
+        st.metric(f"Block 1",value=f"{tong_TGLV_BL1:,.0f}")
+        tong_TGLV_BL2 = df_TGLV[df_TGLV['BLOCK'] == 'BL2']['Tổng số giờ'].sum()
+        st.metric(f"Block 2",value=f"{tong_TGLV_BL2:,.0f}")
+with cols[1]:
+    st.info("Hành chính")
+    tong_TGLV_hanh_chinh = df_TGLV['HC'].sum()
+    st.metric(f"{nha_may}",value=f"{tong_TGLV_hanh_chinh:,.0f}")
+    if nha_may != 'NT1':
+        tong_TGLV_hanh_chinh_BL1 = df_TGLV[df_TGLV['BLOCK'] == 'BL1']['HC'].sum()
+        st.metric(f"Block 1",value=f"{tong_TGLV_hanh_chinh_BL1:,.0f}")
+        tong_TGLV_hanh_chinh_BL2 = df_TGLV[df_TGLV['BLOCK'] == 'BL2']['HC'].sum()
+        st.metric(f"Block 2",value=f"{tong_TGLV_hanh_chinh_BL2:,.0f}")
+with cols[2]:
+    st.info("OT thường")
+    tong_TGLV_OT = df_TGLV['OT'].sum()
+    st.metric(f"{nha_may}",value=f"{tong_TGLV_OT:,.0f}")
+    if nha_may != 'NT1':
+        tong_TGLV_OT_BL1 = df_TGLV[df_TGLV['BLOCK'] == 'BL1']['OT'].sum()
+        st.metric(f"Block 1",value=f"{tong_TGLV_OT_BL1:,.0f}")
+        tong_TGLV_OT_BL2 = df_TGLV[df_TGLV['BLOCK'] == 'BL2']['OT'].sum()
+        st.metric(f"Block 2",value=f"{tong_TGLV_OT_BL2:,.0f}")
+with cols[3]:
+    st.info("OT Chủ nhật")
+    tong_TGLV_OT_CN = df_TGLV['OT_CN'].sum()
+    st.metric(f"{nha_may}",value=f"{tong_TGLV_OT_CN:,.0f}")
+    if nha_may != 'NT1':
+        tong_TGLV_OT_CN_BL1 = df_TGLV[df_TGLV['BLOCK'] == 'BL1']['OT_CN'].sum()
+        st.metric(f"Block 1",value=f"{tong_TGLV_OT_CN_BL1:,.0f}")
+        tong_TGLV_OT_CN_BL2 = df_TGLV[df_TGLV['BLOCK'] == 'BL2']['OT_CN'].sum()
+        st.metric(f"Block 2",value=f"{tong_TGLV_OT_CN_BL2:,.0f}")
+with cols[4]:
+    st.info("Số công nhân")
+    df_TGLV_tong = df_TGLV.groupby(by=['NHA_MAY','NGAY']).agg({'SO_CN':'sum','HC' : 'sum'}).reset_index()
+    so_CN = df_TGLV_tong[df_TGLV_tong['HC'] > 0]['SO_CN'].mean()
+    st.metric(f"{nha_may}",value=f"{so_CN:,.0f}")
+    if nha_may != 'NT1':
+        so_CN_BL1 = df_TGLV[(df_TGLV['BLOCK'] == 'BL1') & (df_TGLV['HC'] > 0)]['SO_CN'].mean()
+        st.metric(f"Block 1",value=f"{so_CN_BL1:,.0f}")
+        so_CN_BL2 = df_TGLV[(df_TGLV['BLOCK'] == 'BL2') & (df_TGLV['HC'] > 0)]['SO_CN'].mean()
+        st.metric(f"Block 2",value=f"{so_CN_BL2:,.0f}")      
+with st.expander("Dữ liệu chi tiết theo ngày"):
+    df_TGLV['HC'] = df_TGLV['HC'].apply(lambda x : f"{x:,.0f}")
+    df_TGLV['OT'] = df_TGLV['OT'].apply(lambda x : f"{x:,.0f}")
+    df_TGLV['OT_CN'] = df_TGLV['OT_CN'].apply(lambda x : f"{x:,.0f}")
+    df_TGLV['Tổng số giờ'] = df_TGLV['Tổng số giờ'].apply(lambda x : f"{x:,.0f}")
+    df_TGLV['NGAY'] = df_TGLV['NGAY'].dt.date
+    df_TGLV
+
 st.markdown("---")
 st.subheader("Tuyển mới")
 df_tuyen_moi = get_data("HR",

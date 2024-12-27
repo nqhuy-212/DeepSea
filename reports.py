@@ -57,6 +57,12 @@ salary_page = st.Page(
     icon= ':material/credit_card:'
 )
 
+hourly_page = st.Page(
+    page="views/hourly.py",
+    title= "Báo cáo dập thẻ hàng giờ",
+    icon= ':material/timer:'
+)
+
 QCO_page = st.Page(
     page="views/QCO.py",
     title= "Báo cáo QCO",
@@ -108,7 +114,7 @@ else:
     # if st.sidebar.button("Làm mới dữ liệu"):
     #     st.rerun()
     pg = st.navigation(pages={
-    'Chọn trang' :[sumary_page,incentive_page,hr_page,tnc_page,salary_page,QCO_page,map_page,rank_page]})   
+    'Chọn trang' :[sumary_page,incentive_page,hr_page,hourly_page,salary_page,QCO_page,map_page,rank_page]})   
     pg.run()
 
 

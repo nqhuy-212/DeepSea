@@ -32,6 +32,7 @@ df1= df1.groupby(by=['WorkDate','Line']).agg({
     'Total_Qty':'sum',
     'SAH_A' : 'sum'
 })
+
 df2 = get_data('DW','SELECT * FROM PPC')
 #st.dataframe(df2)
 df3 = get_data('DW',"SELECT * FROM HR_INCLUDE_TNC WHERE KOIS = 'K'  AND WORKDATE >= '2024-09-01'")
@@ -40,6 +41,7 @@ df3 = get_data('DW',"SELECT * FROM HR_INCLUDE_TNC WHERE KOIS = 'K'  AND WORKDATE
 #ghép các bảng với nhau
 df = pd.merge(df1,df2, on = ['WorkDate','Line'], how= 'left')
 df = pd.merge(df,df3, on=['WorkDate','Line'], how= 'left')
+
 #di chuyển cột
 move_col = df.pop('Fty')
 df.insert(0,'Fty',move_col)
@@ -312,7 +314,10 @@ df_line_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style
 df_line_short_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P_short')
 df_line_SAH = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAH_A')
 
-customdata = np.dstack([df_line_style.values, df_line_SAH.values])
+df4['Link_anh'] = 'http://localhost:100/sketch/' + df4['Style_P'] + '.png'
+df_line_link_anh = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Link_anh')
+
+customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values])
 
 #Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
@@ -339,13 +344,14 @@ fig.update_layout(
 )
 fig.update_traces(
     customdata=customdata,
-    texttemplate='%{z:.1%}',
+    texttemplate='%{z:.0%}',
     textfont=dict(size=14),
     zmin=0,
     zmax=1,
     hovertemplate=(
         "Style: %{customdata[0]}<br>"
-        "SAH: %{customdata[1]:.0f}"
+        "SAH: %{customdata[1]:.0f}<br>"
+        # "<img src='%{customdata[2]}' style='width:100px;height:100px;'>"
     )
 )
 st.plotly_chart(fig,use_container_width=True,key='heatmap0')
