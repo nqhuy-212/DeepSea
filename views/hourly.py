@@ -86,6 +86,8 @@ with st.expander("Dữ liệu chi tiết"):
     df_hourly
     
 st.markdown("---")
+df_daily['WorkDate'] = pd.to_datetime(df_daily['WorkDate'])
+df_daily = df_daily.query("WorkDate >= @start_date and WorkDate <= @end_date")
 df_daily_groupby = df_daily.groupby(by=['WorkDate','Line']).agg({'Qty':'count'}).reset_index()
 df_daily_pivot = df_daily_groupby.pivot(index='Line',columns='WorkDate',values='Qty')
 
@@ -112,7 +114,8 @@ fig.update_yaxes(
     dtick = 'D1'
 )
 st.plotly_chart(fig,use_container_width=True,key='heatmap2')
-
+with st.expander("Dữ liệu chi tiết"):
+    df_daily_pivot
 st.markdown("---")
 df_total = df_daily_groupby.groupby(by='Line').agg({'Qty':'sum'}).reset_index()
 so_ngay = df_daily_groupby['WorkDate'].nunique()
@@ -145,3 +148,5 @@ fig.update_traces(
     textposition = 'outside'
 )
 st.plotly_chart(fig,use_container_width=True)
+with st.expander("Dữ liệu chi tiết"):
+    df_total
