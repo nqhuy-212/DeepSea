@@ -40,16 +40,9 @@ max_date = df_hourly['WorkDate'].max()
 end_date = st.sidebar.date_input(label="Đến ngày:", value= max_date)
 
 st.subheader("Báo cáo hàng giờ hôm nay")
-if sel_fty == 'NT1':
-    link = "http://10.0.0.252:82"
-else:
-    link = "http://172.16.60.98:82"
-st.markdown(f"[Link báo cáo]({link})")
+st.markdown("[Link báo cáo NT1](http://10.0.0.252:82)")
+st.markdown("[Link báo cáo NT2](http://172.16.60.98:82)")
 
-iframe = f"""
-    <iframe src="{link}" width="100%" height="700" style="border-radius:10px;"></iframe>
-"""
-components.html(iframe, height=800)
 st.markdown("---")
 st.subheader("Bảng theo dõi dập thẻ ETS hàng giờ")
 date_sel = st.date_input("Chọn ngày:",value=max_date,min_value=min_date,max_value=max_date)
