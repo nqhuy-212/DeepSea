@@ -314,10 +314,27 @@ df_line_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style
 df_line_short_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P_short')
 df_line_SAH = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAH_A')
 
-df4['Link_anh'] = 'http://localhost:100/sketch/' + df4['Style_P'] + '.png'
+image_folder = "images/png/"
+df4['Link_anh'] = image_folder + df4['Style_P'] + '.png'
 df_line_link_anh = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Link_anh')
 
-customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values])
+#Lấy SAM bên Incentive
+df_SAM = get_data("INCENTIVE","""
+                  SELECT STYLE AS Style_P ,TU_NGAY,DEN_NGAY , SUM(SAM) AS SAM
+                    FROM SAM_SEW_2 WHERE LTRIM(RTRIM(PHAN_LOAI_CD)) = N'CĐ Chính'
+                    GROUP BY STYLE ,TU_NGAY,DEN_NGAY
+                    ORDER BY STYLE,TU_NGAY
+                  """)
+#chuyển sang định dạng datetime
+df_SAM['TU_NGAY'] = pd.to_datetime(df_SAM['TU_NGAY'])
+df_SAM['DEN_NGAY'] = pd.to_datetime(df_SAM['DEN_NGAY'])
+#Ghép bảng df4 và bảng SAM
+df4 = pd.merge(df4,df_SAM,on='Style_P',how='left')
+df4 = df4[(df4['WorkDate'] >= df4['TU_NGAY']) & (df4['WorkDate'] <= df4['DEN_NGAY'])]
+#pivot lấy bảng SAM
+df_line_SAM = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAM')
+#Ghép các bảng pivot vào thành bảng chiều dùng làm customdata
+customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values,df_line_SAM])
 
 #Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
@@ -350,6 +367,7 @@ fig.update_traces(
     zmax=1,
     hovertemplate=(
         "Style: %{customdata[0]}<br>"
+        "SAM: %{customdata[3]:.4f}<br>"
         "SAH: %{customdata[1]:.0f}<br>"
         # "<img src='%{customdata[2]}' style='width:100px;height:100px;'>"
     )
@@ -384,7 +402,9 @@ fig.update_traces(
     zmax=1,
     hovertemplate=(
         "Hiệu suất: %{z:.1%}<br>"
-        "SAH: %{customdata[1]:.0f}"
+        "SAH: %{customdata[1]:.0f}<br>"
+        "Style: %{customdata[0]}<br>"
+        "SAM: %{customdata[3]:.4f}"
     ),
     text=df_line_short_style.values, 
     texttemplate="%{text}"
@@ -419,7 +439,8 @@ fig.update_traces(
     zmax=1,
     hovertemplate=(
         "Hiệu suất: %{z:.1%}<br>"
-        "Style: %{customdata[0]}"
+        "Style: %{customdata[0]}<br>"
+        "SAM: %{customdata[3]:.4f}"
     ),
     text=df_line_SAH.values, 
     texttemplate="%{text:.0f}"

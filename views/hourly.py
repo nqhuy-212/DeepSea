@@ -4,6 +4,7 @@ from load_data import get_data
 from datetime import datetime,date,timedelta
 import plotly.express as px
 import numpy as np
+import streamlit.components.v1 as components
 
 st.logo("logo_white.png",size= 'large')
 st.markdown(
@@ -38,8 +39,20 @@ start_date = st.sidebar.date_input(label="Từ ngày:",value= first_day_of_month
 max_date = df_hourly['WorkDate'].max()
 end_date = st.sidebar.date_input(label="Đến ngày:", value= max_date)
 
-st.subheader("Bảng theo dõi dập thẻ hàng giờ")
-date_sel = st.date_input("Chọn ngày:",value=today,min_value=min_date,max_value=max_date)
+st.subheader("Báo cáo hàng giờ hôm nay")
+if sel_fty == 'NT1':
+    link = "http://10.0.0.252:82"
+else:
+    link = "http://172.16.60.98:82"
+st.markdown(f"[Link báo cáo]({link})")
+
+iframe = f"""
+    <iframe src="{link}" width="100%" height="700" style="border-radius:10px;"></iframe>
+"""
+components.html(iframe, height=800)
+st.markdown("---")
+st.subheader("Bảng theo dõi dập thẻ ETS hàng giờ")
+date_sel = st.date_input("Chọn ngày:",value=max_date,min_value=min_date,max_value=max_date)
 date_sel = pd.to_datetime(date_sel)
 df_hourly = df_hourly[df_hourly['WorkDate'] == date_sel]
 
