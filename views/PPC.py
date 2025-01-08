@@ -254,7 +254,7 @@ st.plotly_chart(fig,use_container_width=True,key='heatmap1')
 
 #Vẽ biểu đồ nhiệt theo số giờ làm việc
 fig = px.imshow(
-    df_Eff_pivot,
+    df_Hours_pivot,
     color_continuous_scale= "RdYlGn",
     text_auto= True)
 fig.update_xaxes(
@@ -293,7 +293,7 @@ st.plotly_chart(fig,use_container_width=True,key='heatmap2')
 
 #Vẽ biểu đồ nhiệt theo Worker
 fig = px.imshow(
-    df_Eff_pivot,
+    df_Workers_pivot,
     color_continuous_scale= "RdYlGn",
     text_auto= True)
 fig.update_xaxes(
