@@ -81,6 +81,12 @@ chat_page = st.Page(
     icon= ':material/chat:'
 )
 
+ppc_page = st.Page(
+    page="views/PPC.py",
+    title= "Báo cáo PPC",
+    icon= ':material/target:'
+)
+
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
@@ -114,7 +120,7 @@ else:
     # if st.sidebar.button("Làm mới dữ liệu"):
     #     st.rerun()
     pg = st.navigation(pages={
-    'Chọn trang' :[sumary_page,incentive_page,hr_page,hourly_page,salary_page,QCO_page,map_page,rank_page]})   
+    'Chọn trang' :[sumary_page,hr_page,incentive_page,hourly_page,ppc_page,salary_page,QCO_page,map_page,rank_page]})   
     pg.run()
 
 

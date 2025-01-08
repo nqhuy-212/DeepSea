@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 import pyodbc
 import pandas as pd
+from sqlalchemy import create_engine
 
 BASE_DIR = Path(__file__).resolve().parent
 env_file = BASE_DIR / ".env"
@@ -39,6 +40,39 @@ def exec_query(DB,query):
     df = pd.DataFrame.from_records(rows, columns=columns)
     conn.close()
     return df
+def commit_query(DB,query):
+    conn = pyodbc.connect(
+        'DRIVER={SQL Server};'
+        f'SERVER={os.getenv("SERVER")};'
+        f'DATABASE={DB};'
+        f'UID={os.getenv("UID")};'
+        f'PWD={os.getenv("PASSWORD")}'
+    )
+    cursor = conn.cursor()
+    cursor.execute(query)
+    cursor.commit()
+    conn.close()
+
+def import_into_sql(df,db,table_name):
+    import pandas as pd
+
+    # Kết nối tới SQL Server
+    server = os.getenv("SERVER")
+    username = os.getenv("UID")
+    password = os.getenv("PASSWORD")
+
+    # Chuỗi kết nối SQL Server sử dụng pyodbc
+    connection_string = f"mssql+pyodbc://{username}:{password}@{server}/{db}?driver=ODBC+Driver+17+for+SQL+Server"
+
+    # Tạo engine SQLAlchemy
+    engine = create_engine(connection_string)
+
+    # Ghi DataFrame vào bảng SQL Server
+    df.to_sql(name=table_name, con=engine, if_exists="append", index=False)
+
+    # Xác nhận thành công
+    print(f"Dữ liệu đã được thêm vào bảng '{table_name}' thành công!")
+
 #######
 # import streamlit as st
 # from selenium import webdriver
