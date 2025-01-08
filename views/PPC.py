@@ -119,7 +119,7 @@ if up_file:
             "Worker_P": INTEGER
         }
         try:
-            import_to_sql(df=df,table_name="PPC1",dtype=dtype,engine=engine_1)
+            import_to_sql(df=df,table_name="PPC",dtype=dtype,engine=engine_1)
             st.success("Cập nhật dữ liệu mới thành công!")
             time.sleep(5)
             st.rerun()
