@@ -21,10 +21,10 @@ st.markdown(
 st.markdown(f'<h1 class="centered-title">BẢNG XẾP HẠNG</h1>', unsafe_allow_html=True)
 # st.markdown("---")
 rp_type = st.sidebar.radio("Xếp hạng theo",options=['Hiệu suất','Tiền thưởng'])
-chuyen_cong_nhan = st.sidebar.radio("Chuyền/Công nhân",options=['Chuyền','Công nhân'])
+chuyen_cong_nhan = st.sidebar.radio("Chuyền/Công nhân",options=['Xưởng','Chuyền','Công nhân'])
 ds_nha_may = ['NT1','NT2']
 nha_may = st.sidebar.multiselect("Chọn nhà máy",options=ds_nha_may,default=ds_nha_may)
-### Lấy dữ liệu từ SQL
+### Lấy dữ liệu từ SQL nhóm theo chuyền
 df_chuyen = get_data("INCENTIVE","""
                      SELECT 'NT' + LEFT(Line,1) as NHA_MAY,WorkDate as NGAY,Line as CHUYEN,
                      SAH,Total_hours as TGLV,TONG_THUONG
@@ -75,28 +75,132 @@ df_cong_nhan['NGAY'] = pd.to_datetime(df_cong_nhan['NGAY'])
 df_cong_nhan = df_cong_nhan.query("NAM == @nam and THANG == @thang and NGAY >= @tu_ngay and NGAY <=@den_ngay")
 df_cong_nhan = df_cong_nhan[df_cong_nhan['NHA_MAY'].isin(nha_may)]
 ###
+## tính toán theo xưởng
+df_xuong = df_chuyen[['CHUYEN','SAH','TGLV','TONG_THUONG']]
+df_xuong['XUONG'] = df_xuong['CHUYEN'].str[:1] + 'P0' + df_xuong['CHUYEN'].str[1:2]
+df_ten_xuong = pd.DataFrame({'XUONG' : ['1P01','1P02','2P01','2P02','2P03','2P04'],\
+                'TEN_XUONG' : ['🦁Sư tử','🦅Đại bàng','🐲Rồng vàng','🐜Kiến lửa','🐺Sói đêm','🦓Ngựa vằn']})
+df_xuong = df_xuong.merge(df_ten_xuong,on='XUONG',how='left')
+# df_xuong
+
+if chuyen_cong_nhan == "Xưởng":
+    st.info("🏆 Bảng xếp hạng xưởng ")
+    df_xuong_groupby = df_xuong.groupby(by=["TEN_XUONG",'XUONG']).agg({'SAH' : 'sum','TGLV' : 'sum','TONG_THUONG' : 'sum'}).reset_index()
+    df_xuong_groupby['EFF'] = df_xuong_groupby['SAH']/df_xuong_groupby['TGLV']
+    df_xuong_groupby['Hiệu suất'] = df_xuong_groupby['EFF'].apply(lambda x: f"{x:,.1%}")
+    df_xuong_groupby['Tổng thưởng'] = df_xuong_groupby['TONG_THUONG'].apply(lambda x: f"{x/1_000_000:,.1f} triệu")
+    df_xuong_groupby['TEN_XUONG2'] = df_xuong_groupby['TEN_XUONG'] + '-' + df_xuong_groupby['XUONG']
+    # df_xuong_groupby
+    if rp_type == "Hiệu suất":
+        col1,col2,col3 = st.columns(3)
+        with col2:
+            xuong_num_1 = df_xuong_groupby.sort_values('Hiệu suất',ascending=False).iloc[0,0]
+            # hieu_suat_num_1 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[0,5]
+            st.metric("Chuyền vô địch",value= f"{xuong_num_1}🥇")
+            # st.metric("Hiệu suất", value= f"{hieu_suat_num_1}")
+        with col1:
+            st.metric("",value="")
+            xuong_num_2 = df_xuong_groupby.sort_values('Hiệu suất',ascending=False).iloc[1,0]
+            st.metric("Chuyền Á quân",value= f"{xuong_num_2}🥈")
+        with col3:
+            st.metric("",value="")
+            st.metric("",value="")
+            xuong_num_3 = df_xuong_groupby.sort_values('Hiệu suất',ascending=False).iloc[2,0]
+            st.metric("Chuyền hạng 3",value= f"{xuong_num_3}🥉")
+        st.markdown("---")
+
+        fig = px.bar(
+        df_xuong_groupby.sort_values('EFF',ascending=True).iloc[-10:],
+        x="EFF",
+        y='TEN_XUONG2',
+        text="Hiệu suất"
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        max_eff = df_xuong_groupby['EFF'].max()*1.2
+        fig.update_xaxes(
+            tickformat = ",.0%",
+            range = [0,max_eff]
+        )
+        fig.update_yaxes(
+            tickfont = dict(size = 14)
+        )
+        fig.update_layout(
+            title = "Top xưởng có hiệu suất cao nhất",
+            xaxis_title = 'Hiệu suất xưởng',
+            yaxis_title = 'Xưởng'
+        )
+        st.plotly_chart(fig,use_container_width=True)
+        ###
+        with st.expander("Dữ liệu chi tiết"):
+            st.dataframe(df_xuong_groupby.sort_values("EFF",ascending=False))
+    if rp_type == "Tiền thưởng":
+        col1,col2,col3 = st.columns(3)
+        with col2:
+            xuong_num_1 = df_xuong_groupby.sort_values('TONG_THUONG',ascending=False).iloc[0,0]
+            # hieu_suat_num_1 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[0,5]
+            st.metric("Chuyền vô địch",value= f"{xuong_num_1}🥇")
+            # st.metric("Hiệu suất", value= f"{hieu_suat_num_1}")
+        with col1:
+            st.metric("",value="")
+            xuong_num_2 = df_xuong_groupby.sort_values('TONG_THUONG',ascending=False).iloc[1,0]
+            st.metric("Chuyền Á quân",value= f"{xuong_num_2}🥈")
+        with col3:
+            st.metric("",value="")
+            st.metric("",value="")
+            xuong_num_3 = df_xuong_groupby.sort_values('TONG_THUONG',ascending=False).iloc[2,0]
+            st.metric("Chuyền hạng 3",value= f"{xuong_num_3}🥉")
+        st.markdown("---")
+        fig = px.bar(
+            df_xuong_groupby.sort_values('TONG_THUONG',ascending=True).iloc[-10:],
+            x="TONG_THUONG",
+            y='TEN_XUONG2',
+            text="Tổng thưởng"
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        fig.update_layout(
+            title = "Top xưởng có tiền thưởng cao nhất",
+            xaxis_title = 'Tiền thưởng',
+            yaxis_title = 'Xưởng'
+        )
+        fig.update_yaxes(
+            tickfont = dict(size = 14)
+        )
+        max_tien_thuong = df_xuong_groupby['TONG_THUONG'].max()*1.2
+        fig.update_xaxes(
+            range=[0,max_tien_thuong]
+        )
+        st.plotly_chart(fig,use_container_width=True)
+        ###
+        with st.expander("Dữ liệu chi tiết"):
+            st.dataframe(df_xuong_groupby.sort_values("TONG_THUONG",ascending=False))
+###
 if chuyen_cong_nhan == "Chuyền":
     st.info("🏆 Bảng xếp hạng chuyền ")
     df_chuyen_groupby = df_chuyen.groupby(by=["TEN",'CHUYEN']).agg({'SAH' : 'sum','TGLV' : 'sum','TONG_THUONG' : 'sum'}).reset_index()
     df_chuyen_groupby['EFF'] = df_chuyen_groupby['SAH']/df_chuyen_groupby['TGLV']
     df_chuyen_groupby['Hiệu suất'] = df_chuyen_groupby['EFF'].apply(lambda x: f"{x:,.1%}")
     df_chuyen_groupby['Tổng thưởng'] = df_chuyen_groupby['TONG_THUONG'].apply(lambda x: f"{x/1_000_000:,.1f} triệu")
-    df_chuyen_groupby['TEN_CHUYEN'] = df_chuyen_groupby['TEN'] + '-' + df_chuyen_groupby['CHUYEN']
+    # df_chuyen_groupby['TEN_CHUYEN'] = df_chuyen_groupby['TEN'] + '-' + df_chuyen_groupby['CHUYEN']
+    df_chuyen_groupby['TEN_CHUYEN'] = df_chuyen_groupby['CHUYEN']
     if rp_type == "Hiệu suất":
         col1,col2,col3 = st.columns(3)
         with col2:
-            chuyen_num_1 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[0,0]
+            chuyen_num_1 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[0,1]
             # hieu_suat_num_1 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[0,5]
             st.metric("Chuyền vô địch",value= f"{chuyen_num_1}🥇")
             # st.metric("Hiệu suất", value= f"{hieu_suat_num_1}")
         with col1:
             st.metric("",value="")
-            chuyen_num_2 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[1,0]
+            chuyen_num_2 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[1,1]
             st.metric("Chuyền Á quân",value= f"{chuyen_num_2}🥈")
         with col3:
             st.metric("",value="")
             st.metric("",value="")
-            chuyen_num_3 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[2,0]
+            chuyen_num_3 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[2,1]
             st.metric("Chuyền hạng 3",value= f"{chuyen_num_3}🥉")
         st.markdown("---")
 

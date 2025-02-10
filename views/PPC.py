@@ -78,57 +78,58 @@ end_date = st.sidebar.date_input(label="Đến ngày:", value= value,max_value=m
 
 df_ppc =  df_ppc.query("WorkDate >= @start_date and WorkDate <= @end_date")
 ###############
-# Tải xuống file PPC mẫu
-with open("excel/File mẫu PPC.xlsx", "rb") as file:
-    st.sidebar.download_button(
-        label="Tải xuống File mẫu PPC",
-        data=file,
-        file_name="File mẫu PPC.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-#Upload file kế hoạch mới
-file_to_upload = st.sidebar.file_uploader("Cập nhật mục tiêu",type=["xlsx"])
-up_file = st.sidebar.button("Tải lên file kế hoạch mới")
+# # Tải xuống file PPC mẫu
+# with open("excel/File mẫu PPC.xlsx", "rb") as file:
+#     st.sidebar.download_button(
+#         label="Tải xuống File mẫu PPC",
+#         data=file,
+#         file_name="File mẫu PPC.xlsx",
+#         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+#     )
+# #Upload file kế hoạch mới
+# file_to_upload = st.sidebar.file_uploader("Cập nhật mục tiêu",type=["xlsx"])
+# up_file = st.sidebar.button("Tải lên file kế hoạch mới")
 
-if up_file:
-    if file_to_upload:
-        df = pd.read_excel(file_to_upload)
-        df = df.rename(columns={df.columns[0] : "Line"})
-        df['Chỉ số'] = df['Date'].apply(lambda x : 'Style_P' if x == 'Style' else 'Qty_P' if x == 'S.lượng' else 'SAH_P' if x == 'SAH'
-                                        else 'Hours_P' if x == 'AVG Hours' else 'Worker_P' if x == 'Total Worker' else None)
-        df = df.drop(columns= {df.columns[1],df.columns[2]})
+# if up_file:
+#     if file_to_upload:
+#         df = pd.read_excel(file_to_upload)
+#         df = df.rename(columns={df.columns[0] : "Line"})
+#         df['Chỉ số'] = df['Date'].apply(lambda x : 'Style_P' if x == 'Style' else 'Qty_P' if x == 'S.lượng' else 'SAH_P' if x == 'SAH'
+#                                         else 'Hours_P' if x == 'AVG Hours' else 'Worker_P' if x == 'Total Worker' else None)
+#         df = df.drop(columns= {df.columns[1],df.columns[2]})
         
-        df = df.dropna(subset=['Chỉ số'])
-        df['Line'] = df['Line'].fillna(method='ffill')
-        df = pd.melt(df,id_vars=['Chỉ số','Line'])
-        df.rename(columns={'variable' : 'WorkDate'},inplace=True)
-        df['WorkDate'] = pd.to_datetime(df['WorkDate'])
-        df['WorkDate'] = df['WorkDate'].dt.date
-        df = df.pivot(index=['Line','WorkDate'],columns='Chỉ số',values='value').reset_index()
-        df = df.dropna(subset=['Hours_P','Qty_P','SAH_P','Worker_P'],how= 'all')
-        new_order = ["WorkDate", "Line", "Style_P", "Qty_P","SAH_P","Hours_P","Worker_P"]  # Thứ tự mong muốn
-        df = df[new_order]
-
-        dtype = {
-            "WorkDate": DATE,
-            "Line": NVARCHAR(100),
-            "Style_P": NVARCHAR(100),
-            "Qty_P": INTEGER,
-            "SAH_P": DECIMAL(10,2),   
-            "Hours_P": DECIMAL(3,1),  
-            "Worker_P": INTEGER
-        }
-        try:
-            import_to_sql(df=df,table_name="PPC",dtype=dtype,engine=engine_1)
-            st.success("Cập nhật dữ liệu mới thành công!")
-            time.sleep(5)
-            st.rerun()
+#         df = df.dropna(subset=['Chỉ số'])
+#         df['Line'] = df['Line'].fillna(method='ffill')
+     
+#         df = pd.melt(df,id_vars=['Chỉ số','Line'])
+#         df.rename(columns={'variable' : 'WorkDate'},inplace=True)
+#         df['WorkDate'] = pd.to_datetime(df['WorkDate'])
+#         df['WorkDate'] = df['WorkDate'].dt.date
+#         df = df.pivot(index=['Line','WorkDate'],columns='Chỉ số',values='value').reset_index()
+#         df = df.dropna(subset=['Hours_P','Qty_P','SAH_P','Worker_P'],how= 'all')
+#         new_order = ["WorkDate", "Line", "Style_P", "Qty_P","SAH_P","Hours_P","Worker_P"]  # Thứ tự mong muốn
+#         df = df[new_order]
+        
+#         dtype = {
+#             "WorkDate": DATE,
+#             "Line": NVARCHAR(100),
+#             "Style_P": NVARCHAR(100),
+#             "Qty_P": INTEGER,
+#             "SAH_P": DECIMAL(10,2),   
+#             "Hours_P": DECIMAL(3,1),  
+#             "Worker_P": INTEGER
+#         }
+#         try:
+#             import_to_sql(df=df,table_name="PPC",dtype=dtype,engine=engine_1)
+#             st.success("Cập nhật dữ liệu mới thành công!")
+#             time.sleep(5)
+#             st.rerun()
             
-        except Exception as e:
-            print(e)
-            HTTPException(status_code=500, detail="Internal server error")
-    else:
-        st.sidebar.warning("Vui lòng chọn file trước khi tải lên")
+#         except Exception as e:
+#             print(e)
+#             HTTPException(status_code=500, detail="Internal server error")
+#     else:
+#         st.sidebar.warning("Vui lòng chọn file trước khi tải lên")
 ###############
 Total_SAH = df_ppc['SAH_P'].sum()
 Total_Qty = df_ppc['Qty_P'].sum()

@@ -57,9 +57,9 @@ def import_into_sql(df,db,table_name):
     import pandas as pd
 
     # Kết nối tới SQL Server
-    server = os.getenv("SERVER")
-    username = os.getenv("UID")
-    password = os.getenv("PASSWORD")
+    server = os.getenv("HOST")
+    username = os.getenv("USERNAME_DB")
+    password = os.getenv("PASSWORD_DB")
 
     # Chuỗi kết nối SQL Server sử dụng pyodbc
     connection_string = f"mssql+pyodbc://{username}:{password}@{server}/{db}?driver=ODBC+Driver+17+for+SQL+Server"

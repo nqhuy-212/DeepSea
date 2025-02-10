@@ -334,6 +334,7 @@ df4 = df4[(df4['WorkDate'] >= df4['TU_NGAY']) & (df4['WorkDate'] <= df4['DEN_NGA
 #pivot lấy bảng SAM
 df_line_SAM = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAM')
 #Ghép các bảng pivot vào thành bảng chiều dùng làm customdata
+
 customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values,df_line_SAM])
 
 #Vẽ biểu đồ nhiệt theo Eff
