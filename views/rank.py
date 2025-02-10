@@ -28,8 +28,11 @@ nha_may = st.sidebar.multiselect("Chọn nhà máy",options=ds_nha_may,default=d
 df_chuyen = get_data("INCENTIVE","""
                      SELECT 'NT' + LEFT(Line,1) as NHA_MAY,WorkDate as NGAY,Line as CHUYEN,
                      SAH,Total_hours as TGLV,TONG_THUONG
-                     FROM THUONG_NHOM_MAY_HANG_NGAY ORDER BY WORKDATE,LINE
+                     FROM THUONG_NHOM_MAY_HANG_NGAY 
+                     WHERE WorkDate < CAST(GETDATE() AS DATE)
+                     ORDER BY WORKDATE,LINE
                      """)
+
 df_chuyen['NAM'] = df_chuyen['NGAY'].str[:4]
 df_chuyen['THANG'] = df_chuyen['NGAY'].str[5:7]
 df_chuyen['NGAY'] = pd.to_datetime(df_chuyen['NGAY'],format="%Y-%m-%d")
@@ -66,8 +69,10 @@ df_chuyen[['SAH lũy kế','TGLV lũy kế','Thưởng lũy kế']] = (df_chuyen
 df_cong_nhan = get_data("INCENTIVE","""
                         SELECT MST,HO_TEN,CHUYEN,NGAY,SAH,SO_GIO as TGLV,THUONG_CA_NHAN
                         FROM INCENTIVE_CN_MAY_HANG_NGAY WHERE THUONG_CA_NHAN >0
+                        AND NGAY < CAST(GETDATE() AS DATE)
                         ORDER BY NGAY,CHUYEN
                         """)
+
 df_cong_nhan['NHA_MAY'] = 'NT' + df_cong_nhan['CHUYEN'].str[:1]
 df_cong_nhan['NAM'] = df_cong_nhan['NGAY'].str[:4]
 df_cong_nhan['THANG'] = df_cong_nhan['NGAY'].str[5:7]
@@ -186,6 +191,7 @@ if chuyen_cong_nhan == "Chuyền":
     df_chuyen_groupby['Tổng thưởng'] = df_chuyen_groupby['TONG_THUONG'].apply(lambda x: f"{x/1_000_000:,.1f} triệu")
     # df_chuyen_groupby['TEN_CHUYEN'] = df_chuyen_groupby['TEN'] + '-' + df_chuyen_groupby['CHUYEN']
     df_chuyen_groupby['TEN_CHUYEN'] = df_chuyen_groupby['CHUYEN']
+
     if rp_type == "Hiệu suất":
         col1,col2,col3 = st.columns(3)
         with col2:
