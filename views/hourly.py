@@ -52,6 +52,7 @@ df_hourly = df_hourly[df_hourly['WorkDate'] == date_sel]
 df_hourly_groupby = df_hourly.groupby(by=['WorkDate','Line','Time']).agg({'Qty':'sum','SAH':'sum','Style' : 'max'}).reset_index()
 # df_hourly_groupby
 df_hourly_pivot = df_hourly_groupby.pivot(index='Line',columns='Time',values='SAH')
+# df_hourly_pivot
 df_hourly_pivot_style = df_hourly_groupby.pivot(index='Line',columns='Time',values='Style')
 df_hourly_pivot_qty = df_hourly_groupby.pivot(index='Line',columns='Time',values='Qty')
 # df_hourly_groupby
@@ -59,6 +60,7 @@ df_hourly_pivot_qty = df_hourly_groupby.pivot(index='Line',columns='Time',values
 # df_hourly_pivot_style
 # df_hourly_pivot_qty
 customdata = np.dstack([df_hourly_pivot_style.values, df_hourly_pivot_qty.values])
+
 fig = px.imshow(
     df_hourly_pivot,
     color_continuous_scale="RdYlGn",
@@ -88,7 +90,10 @@ with st.expander("Dữ liệu chi tiết"):
 st.markdown("---")
 df_daily['WorkDate'] = pd.to_datetime(df_daily['WorkDate'])
 df_daily = df_daily.query("WorkDate >= @start_date and WorkDate <= @end_date")
-df_daily_groupby = df_daily.groupby(by=['WorkDate','Line']).agg({'Qty':'count'}).reset_index()
+df_daily_line_wd = df_daily.groupby(by=['WorkDate','Line','Time_Stamp']).agg({'Qty':'sum'}).reset_index()
+# df_daily_line_wd
+df_daily_groupby = df_daily_line_wd.groupby(by=['WorkDate','Line']).agg({'Qty':'count'}).reset_index()
+# df_daily_groupby
 df_daily_pivot = df_daily_groupby.pivot(index='Line',columns='WorkDate',values='Qty')
 
 fig = px.imshow(
