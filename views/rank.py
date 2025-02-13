@@ -20,7 +20,7 @@ st.markdown(
 )
 st.markdown(f'<h1 class="centered-title">BẢNG XẾP HẠNG</h1>', unsafe_allow_html=True)
 # st.markdown("---")
-rp_type = st.sidebar.radio("Xếp hạng theo",options=['Hiệu suất','Tiền thưởng'])
+rp_type = st.sidebar.radio("Xếp hạng theo",options=['Hiệu suất','Tiền thưởng','Tỉ lệ lỗi'])
 chuyen_cong_nhan = st.sidebar.radio("Chuyền/Công nhân",options=['Xưởng','Chuyền','Công nhân'])
 ds_nha_may = ['NT1','NT2']
 nha_may = st.sidebar.multiselect("Chọn nhà máy",options=ds_nha_may,default=ds_nha_may)
@@ -87,6 +87,29 @@ df_ten_xuong = pd.DataFrame({'XUONG' : ['1P01','1P02','2P01','2P02','2P03','2P04
                 'TEN_XUONG' : ['🦁Sư tử','🦅Đại bàng','🐲Rồng vàng','🐜Kiến lửa','🐺Sói đêm','🦓Ngựa vằn']})
 df_xuong = df_xuong.merge(df_ten_xuong,on='XUONG',how='left')
 # df_xuong
+df_oql = get_data('INCENTIVE',"SELECT * FROM TI_LE_LOI WHERE NGAY < CAST(GETDATE() AS DATE) AND NGAY >= '2024-09-01'")
+df_oql['XUONG'] = df_oql['CHUYEN'].str[:1] +'P0' + df_oql['CHUYEN'].str[1:2]
+df_oql['NHA_MAY'] = 'NT' + df_oql['CHUYEN'].str[:1]
+df_oql['CODE'] = df_oql['CHUYEN'].str[2:-2]
+df_oql['NHOM'] = df_oql['CODE'].apply(lambda x: 'Cắt' if x == 'C' else 'May' if x == 'S' else 'QC May' if x == 'QC1'
+                              else 'Là' if x == 'I' else 'QC Là' if x == 'QC2' else 'Hoàn thiện' if x == 'F' else '')
+df_oql['THANG'] = df_oql['NGAY'].str[5:7]
+df_oql['NAM'] = df_oql['NGAY'].str[:4]
+df_oql.pop('CODE')
+#di chuyển cột
+move_col = df_oql.pop('NHA_MAY')
+df_oql.insert(0,'NHA_MAY',move_col)
+move_col = df_oql.pop('XUONG')
+df_oql.insert(1,'XUONG',move_col)
+df_oql['NGAY'] = pd.to_datetime(df_oql['NGAY'], format='%Y-%m-%d')
+df_oql['NGAY'] = df_oql['NGAY'].dt.date
+
+#chuyển cột WorkDate về dạng date
+df_oql= df_oql[(df_oql['NHA_MAY'].isin(nha_may)) & 
+               (df_oql['THANG']==thang) & 
+               (df_oql['NAM']==nam) & 
+               (df_oql['NGAY'] >= tu_ngay) & 
+               (df_oql['NGAY'] <= den_ngay)]
 
 if chuyen_cong_nhan == "Xưởng":
     st.info("🏆 Bảng xếp hạng xưởng ")
@@ -183,6 +206,46 @@ if chuyen_cong_nhan == "Xưởng":
         with st.expander("Dữ liệu chi tiết"):
             st.dataframe(df_xuong_groupby.sort_values("TONG_THUONG",ascending=False))
 ###
+    if rp_type == "Tỉ lệ lỗi":
+        df_oql = pd.merge(df_oql,df_ten_xuong,on='XUONG',how= 'left')
+        df_oql['TEN_XUONG2'] = df_oql['TEN_XUONG'] +'-'+df_oql['XUONG']
+        df_oql= df_oql.dropna(subset='TEN_XUONG')
+        df_oql_groupby = df_oql.groupby(by=['NHOM','TEN_XUONG2']).agg({'TI_LE_LOI' : 'mean'}).reset_index()
+        df_oql_groupby['TI_LE_LOI_formated'] = df_oql_groupby['TI_LE_LOI'].apply(lambda x: f"{x:,.1%}")
+        # df_oql_groupby
+        ds_nhom = ['Cắt','May','QC May','Là','QC Là','Hoàn thiện']
+        nhom_sel = st.radio(label="Chọn nhóm",options=ds_nhom,horizontal=True,index=1)
+        #Nhóm cắt
+        df_oql_groupby_nhom = df_oql_groupby[df_oql_groupby['NHOM'] == nhom_sel]
+        # df_oql_groupby_nhom
+        fig = px.bar(
+            df_oql_groupby_nhom.sort_values('TI_LE_LOI',ascending=False),
+            x="TI_LE_LOI",
+            y='TEN_XUONG2',
+            text="TI_LE_LOI_formated"
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        row_num = df_oql_groupby_nhom.shape[0]
+        row_hight = 35
+        fig.update_layout(
+            title = f"Tỉ lệ lỗi nhóm {nhom_sel}",
+            xaxis_title = 'Tỉ lệ lỗi',
+            yaxis_title = 'Xưởng',
+            # height = row_num * row_hight
+        )
+        fig.update_yaxes(
+            tickfont = dict(size = 14)
+        )
+        max_oql = df_oql_groupby_nhom['TI_LE_LOI'].max()*1.2
+        fig.update_xaxes(
+            range=[0,max_oql],
+            tickformat = ",.0%"
+        )
+        st.plotly_chart(fig,use_container_width=True,key='bar0')
+        ###    
+###
 if chuyen_cong_nhan == "Chuyền":
     st.info("🏆 Bảng xếp hạng chuyền ")
     df_chuyen_groupby = df_chuyen.groupby(by=["TEN",'CHUYEN']).agg({'SAH' : 'sum','TGLV' : 'sum','TONG_THUONG' : 'sum'}).reset_index()
@@ -278,6 +341,43 @@ if chuyen_cong_nhan == "Chuyền":
         ###
         with st.expander("Dữ liệu chi tiết"):
             st.dataframe(df_chuyen_groupby.sort_values("TONG_THUONG",ascending=False))
+    if rp_type == "Tỉ lệ lỗi":
+        # df_oql
+        df_oql_groupby = df_oql.groupby(by=['NHOM','CHUYEN']).agg({'TI_LE_LOI' : 'mean'}).reset_index()
+        df_oql_groupby['TI_LE_LOI_formated'] = df_oql_groupby['TI_LE_LOI'].apply(lambda x: f"{x:,.1%}")
+        # df_oql_groupby
+        ds_nhom = ['Cắt','May','QC May','Là','QC Là','Hoàn thiện']
+        nhom_sel = st.radio(label="Chọn nhóm",options=ds_nhom,horizontal=True,index=1)
+        #Nhóm cắt
+        df_oql_groupby_nhom = df_oql_groupby[df_oql_groupby['NHOM'] == nhom_sel]
+        # df_oql_groupby_nhom
+        fig = px.bar(
+            df_oql_groupby_nhom.sort_values('TI_LE_LOI',ascending=False),
+            x="TI_LE_LOI",
+            y='CHUYEN',
+            text="TI_LE_LOI_formated"
+        )
+        fig.update_traces(
+            textposition = 'outside'
+        )
+        row_num = df_oql_groupby_nhom.shape[0]
+        row_hight = 50
+        fig.update_layout(
+            title = f"Tỉ lệ lỗi nhóm {nhom_sel}",
+            xaxis_title = 'Tỉ lệ lỗi',
+            yaxis_title = 'Chuyền',
+            height = row_num * row_hight
+        )
+        fig.update_yaxes(
+            tickfont = dict(size = 14)
+        )
+        max_oql = df_oql_groupby_nhom['TI_LE_LOI'].max()*1.2
+        fig.update_xaxes(
+            range=[0,max_oql],
+            tickformat = ",.0%"
+        )
+        st.plotly_chart(fig,use_container_width=True,key='bar0')
+        ###
 if chuyen_cong_nhan == "Công nhân":
     st.info("🥇 Bảng xếp hạng công nhân may")
     df_cong_nhan_groupby = df_cong_nhan.groupby(by=['NHA_MAY','MST','HO_TEN']).agg({'SAH' : 'sum','TGLV' : 'sum','THUONG_CA_NHAN' :'sum'}).reset_index()
