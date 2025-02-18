@@ -63,8 +63,8 @@ df['WS*Hours_A'] = df['Worker_A']*df['Hours_A']
 
 ###########################
 fty = ['NT1','NT2']
-sel_fty = st.sidebar.selectbox("Chọn nhà máy:",options = fty,index=fty.index(st.session_state.factory))
-unit = df[df['Fty'] == sel_fty]['Unit'].unique()
+sel_fty = st.sidebar.multiselect("Chọn nhà máy:",options = fty,default=fty)
+unit = df[df['Fty'].isin(sel_fty)]['Unit'].unique()
 unit_sorted = sorted(unit, reverse= False)
 sel_unit = st.sidebar.multiselect("Chọn xưởng:", options= unit, default= unit_sorted)
 
@@ -82,7 +82,7 @@ styles = df[
 (df['WorkDate'] <= end_date)]['Style_P'].unique()
 sel_style = st.sidebar.multiselect("Chọn Style:",options=styles,default=styles)
 
-st.markdown(f'<h1 class="centered-title">BÁO CÁO TỔNG HỢP {sel_fty}</h1>', unsafe_allow_html=True)
+st.markdown(f'<h1 class="centered-title">BÁO CÁO TỔNG HỢP</h1>', unsafe_allow_html=True)
 df4 = df[
 (df['Unit'].isin(sel_unit)) & 
 (df['WorkDate'] >= start_date) & 
