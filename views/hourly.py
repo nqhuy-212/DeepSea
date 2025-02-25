@@ -30,6 +30,7 @@ df_hourly = get_data("DW",f"SELECT * FROM ETS_DAP_THE_HANG_GIO WHERE 'NT' + LEFT
 df_daily = df_hourly.copy()
 df_hourly['Time'] = df_hourly['Time_Stamp'].apply(lambda x: f"{x:%H:%M}") 
 df_hourly['WorkDate'] = pd.to_datetime(df_hourly['WorkDate'])
+df_hourly['Time'].replace(to_replace='12:30',value='13:30',inplace=True)
 
 min_date = df_hourly['WorkDate'].min()
 today = date.today() if date.today().day >1 else date.today() - timedelta(days=1)
@@ -90,12 +91,13 @@ with st.expander("Dữ liệu chi tiết"):
 st.markdown("---")
 df_daily['WorkDate'] = pd.to_datetime(df_daily['WorkDate'])
 df_daily = df_daily.query("WorkDate >= @start_date and WorkDate <= @end_date")
+df_daily['Time_Stamp']=df_daily['Time_Stamp'].apply(lambda x: f"{x:%H:%M}")
+df_daily['Time_Stamp'].replace(to_replace="12:30",value="13:30",inplace=True)
 df_daily_line_wd = df_daily.groupby(by=['WorkDate','Line','Time_Stamp']).agg({'Qty':'sum'}).reset_index()
 # df_daily_line_wd
 df_daily_groupby = df_daily_line_wd.groupby(by=['WorkDate','Line']).agg({'Qty':'count'}).reset_index()
 # df_daily_groupby
 df_daily_pivot = df_daily_groupby.pivot(index='Line',columns='WorkDate',values='Qty')
-
 fig = px.imshow(
     df_daily_pivot,
     color_continuous_scale= "RdYlGn",
