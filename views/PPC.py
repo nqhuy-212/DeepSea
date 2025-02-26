@@ -29,7 +29,7 @@ st.markdown(
 st.markdown(f'<h1 class="centered-title">BÁO CÁO PPC</h1>', unsafe_allow_html=True)
 #######
 fty = ['NT1','NT2']
-sel_fty = st.sidebar.selectbox("Chọn nhà máy:",options = fty,index=fty.index(st.session_state.factory))
+sel_fty = st.sidebar.multiselect("Chọn nhà máy:",options = fty,default=fty)
 
 df_ppc = get_data("DW",f"SELECT * FROM PPC WHERE WORKDATE >= '2024-09-01' ORDER BY WORKDATE DESC,LINE")
 df_ppc['Attn'] = df_ppc['Line'].apply(lambda x: 0.9 if str(x)[:1] == '1' else 0.93)
@@ -58,9 +58,9 @@ df_SAM['DEN_NGAY'] = pd.to_datetime(df_SAM['DEN_NGAY'])
 df_ppc = pd.merge(df_ppc,df_SAM,on='Style_P',how='left')
 df_ppc = df_ppc[(df_ppc['WorkDate'] >= df_ppc['TU_NGAY']) & (df_ppc['WorkDate'] <= df_ppc['DEN_NGAY'])]
 df_ppc = df_ppc.drop(['TU_NGAY', 'DEN_NGAY'], axis=1)
-df_ppc = df_ppc.query("Fty == @sel_fty")
+df_ppc = df_ppc.query("Fty in @sel_fty")
 
-unit = df_ppc[df_ppc['Fty'] == sel_fty]['Unit'].unique()
+unit = df_ppc[df_ppc['Fty'].isin(sel_fty)]['Unit'].unique()
 unit_sorted = sorted(unit, reverse= False)
 sel_unit = st.sidebar.multiselect("Chọn xưởng:", options= unit, default= unit_sorted)
 
@@ -141,7 +141,7 @@ WD = df_ppc['WorkDate'].nunique()
 SAH_CN = Total_SAH/Workers
 Attn = df_ppc['Attn'].mean()
 
-st.subheader(f"Mục tiêu nhà máy {sel_fty}")
+st.subheader(f"Mục tiêu nhà máy {", ".join(sel_fty)}")
 cols = st.columns(4)
 with cols[0]:
     st.metric("Tổng SAH",value=f"{Total_SAH:,.0f}")
