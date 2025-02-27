@@ -96,7 +96,13 @@ df_nhom_ngay = df_nhom_ngay.sort_values('NGAY')
 category_order = {
     'NHOM': ['Cắt', 'May', 'QC May', 'Là', 'QC Là', 'Hoàn thiện']
 }
-
+#config chung cho các biểu đồ plotly
+config = {
+    'displayModeBar': True,  # Hiển thị/thêm thanh công cụ
+    'modeBarButtonsToRemove': ['zoom', 'select', 'lasso2d', 'resetScale', 'toImage'],  # Ẩn nút
+    'displaylogo': False,  # Ẩn logo Plotly
+    'modeBarButtonsToAdd': []  # Đảm bảo không thêm bất kỳ nút nào khác
+}
 fig = px.line(df_nhom_ngay,
                 x= df_nhom_ngay['NGAY'],
                 y= df_nhom_ngay['TI_LE_LOI'],
@@ -130,7 +136,7 @@ fig.update_traces(
     textposition = 'top center',
     textfont = dict(size = 14)
 )
-st.plotly_chart(fig,use_container_width=True)
+st.plotly_chart(fig,use_container_width=True,config=config)
 
 st.markdown("---")
 ## Heatmap CẮT
@@ -165,7 +171,7 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap0')
+st.plotly_chart(fig,use_container_width=True,key='heatmap0',config=config)
 ## Heatmap MAY
 df_may = df[df['NHOM']=='May']
 df_may_pivot = pd.pivot_table(data=df_may,index='CHUYEN',columns='NGAY',values='TI_LE_LOI')
@@ -197,7 +203,7 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap1')
+st.plotly_chart(fig,use_container_width=True,key='heatmap1',config=config)
 ## Heatmap QC MAY
 df_qcmay = df[df['NHOM']=='QC May']
 df_qcmay_pivot = pd.pivot_table(data=df_qcmay,index='CHUYEN',columns='NGAY',values='TI_LE_LOI')
@@ -229,7 +235,7 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap2')
+st.plotly_chart(fig,use_container_width=True,key='heatmap2',config=config)
 ## Heatmap LA
 df_la = df[df['NHOM']=='Là']
 df_la_pivot = pd.pivot_table(data=df_la,index='CHUYEN',columns='NGAY',values='TI_LE_LOI')
@@ -261,7 +267,7 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap3')
+st.plotly_chart(fig,use_container_width=True,key='heatmap3',config=config)
 ## Heatmap QC LA
 df_qcla = df[df['NHOM']=='QC Là']
 df_qcla_pivot = pd.pivot_table(data=df_qcla,index='CHUYEN',columns='NGAY',values='TI_LE_LOI')
@@ -293,7 +299,7 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap4')
+st.plotly_chart(fig,use_container_width=True,key='heatmap4',config=config)
 ## Heatmap HOAN THIEN
 df_hoanthien = df[df['NHOM']=='Hoàn thiện']
 df_hoanthien_pivot = pd.pivot_table(data=df_hoanthien,index='CHUYEN',columns='NGAY',values='TI_LE_LOI')
@@ -325,5 +331,5 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap5')
+st.plotly_chart(fig,use_container_width=True,key='heatmap5',config=config)
 

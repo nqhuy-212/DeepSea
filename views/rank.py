@@ -110,7 +110,13 @@ df_oql= df_oql[(df_oql['NHA_MAY'].isin(nha_may)) &
                (df_oql['NAM']==nam) & 
                (df_oql['NGAY'] >= tu_ngay) & 
                (df_oql['NGAY'] <= den_ngay)]
-
+#config chung cho các biểu đồ plotly
+config = {
+    'displayModeBar': True,  # Hiển thị/thêm thanh công cụ
+    'modeBarButtonsToRemove': ['zoom', 'select', 'lasso2d', 'resetScale', 'toImage'],  # Ẩn nút
+    'displaylogo': False,  # Ẩn logo Plotly
+    'modeBarButtonsToAdd': []  # Đảm bảo không thêm bất kỳ nút nào khác
+}
 if chuyen_cong_nhan == "Xưởng":
     st.info("🏆 Bảng xếp hạng xưởng ")
     df_xuong_groupby = df_xuong.groupby(by=["TEN_XUONG",'XUONG']).agg({'SAH' : 'sum','TGLV' : 'sum','TONG_THUONG' : 'sum'}).reset_index()
@@ -159,7 +165,7 @@ if chuyen_cong_nhan == "Xưởng":
             xaxis_title = 'Hiệu suất xưởng',
             yaxis_title = 'Xưởng'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
             st.dataframe(df_xuong_groupby.sort_values("EFF",ascending=False))
@@ -201,7 +207,7 @@ if chuyen_cong_nhan == "Xưởng":
         fig.update_xaxes(
             range=[0,max_tien_thuong]
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
             st.dataframe(df_xuong_groupby.sort_values("TONG_THUONG",ascending=False))
@@ -243,7 +249,7 @@ if chuyen_cong_nhan == "Xưởng":
             range=[0,max_oql],
             tickformat = ",.0%"
         )
-        st.plotly_chart(fig,use_container_width=True,key='bar0')
+        st.plotly_chart(fig,use_container_width=True,key='bar0',config=config)
         ###    
 ###
 if chuyen_cong_nhan == "Chuyền":
@@ -295,7 +301,7 @@ if chuyen_cong_nhan == "Chuyền":
             xaxis_title = 'Hiệu suất chuyền',
             yaxis_title = 'Chuyền'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
             st.dataframe(df_chuyen_groupby.sort_values("EFF",ascending=False))
@@ -337,7 +343,7 @@ if chuyen_cong_nhan == "Chuyền":
         fig.update_xaxes(
             range=[0,max_tien_thuong]
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
             st.dataframe(df_chuyen_groupby.sort_values("TONG_THUONG",ascending=False))
@@ -376,7 +382,7 @@ if chuyen_cong_nhan == "Chuyền":
             range=[0,max_oql],
             tickformat = ",.0%"
         )
-        st.plotly_chart(fig,use_container_width=True,key='bar0')
+        st.plotly_chart(fig,use_container_width=True,key='bar0',config=config)
         ###
 if chuyen_cong_nhan == "Công nhân":
     st.info("🥇 Bảng xếp hạng công nhân may")
@@ -424,7 +430,7 @@ if chuyen_cong_nhan == "Công nhân":
             xaxis_title = 'Hiệu suất cá nhân',
             yaxis_title = 'MST - Họ tên'
         )
-        st.plotly_chart(fig,use_container_width=True,key='bar_cn1')
+        st.plotly_chart(fig,use_container_width=True,key='bar_cn1',config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
             st.dataframe(df_cong_nhan_groupby.sort_values("EFF",ascending=False))
@@ -466,7 +472,7 @@ if chuyen_cong_nhan == "Công nhân":
         fig.update_xaxes(
             range=[0,max_tien_thuong]
         )
-        st.plotly_chart(fig,use_container_width=True,key='bar_cn2')
+        st.plotly_chart(fig,use_container_width=True,key='bar_cn2',config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
             st.dataframe(df_cong_nhan_groupby.sort_values('THUONG_CA_NHAN',ascending=False))

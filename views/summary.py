@@ -183,7 +183,15 @@ fig.update_traces(
     textposition = 'top center',
     textfont = dict(size = 14),
 )
-st.plotly_chart(fig,use_container_width=True)
+#config chung cho các biểu đồ plotly
+config = {
+    'displayModeBar': True,  # Hiển thị/thêm thanh công cụ
+    'modeBarButtonsToRemove': ['zoom', 'select', 'lasso2d', 'resetScale', 'toImage'],  # Ẩn nút
+    'displaylogo': False,  # Ẩn logo Plotly
+    'modeBarButtonsToAdd': []  # Đảm bảo không thêm bất kỳ nút nào khác
+}
+
+st.plotly_chart(fig,use_container_width=True,config=config)
 #########
 df5['Eff_A'] = df5['SAH_A']/df5['Total_hours_A']
 df5['Eff_P'] = df5['SAH_P']/df5['Total_hours_P']
@@ -219,7 +227,7 @@ fig.update_traces(
     textfont = dict(size = 14),
 )
 
-st.plotly_chart(fig,use_container_width=True)
+st.plotly_chart(fig,config= config,use_container_width=True)
 
 st.markdown("---")
 # tính toán SAH, Eff theo xưởng
@@ -266,7 +274,7 @@ with cols[0]:
         range = [0,max_SAH],
         # showticklabels = False
     )  
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config=config)
 ## hiệu suất theo xưởng
 with cols[1]:
     fig = go.Figure()
@@ -297,7 +305,7 @@ with cols[1]:
         range = [0,max_SAH],
         # showticklabels = False
     )
-    st.plotly_chart(fig,use_container_width=True,key='fig2')
+    st.plotly_chart(fig,use_container_width=True,key='fig2',config=config)
 
 st.markdown("---")
 ## Heatmap hiệu suất theo chuyền , ngày
@@ -373,7 +381,7 @@ fig.update_traces(
         # "<img src='%{customdata[2]}' style='width:100px;height:100px;'>"
     )
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap0')
+st.plotly_chart(fig,use_container_width=True,key='heatmap0',config=config)
 #Vẽ biểu đồ nhiệt theo short style
 fig = px.imshow(
     df_line_eff_pivot,
@@ -410,7 +418,7 @@ fig.update_traces(
     text=df_line_short_style.values, 
     texttemplate="%{text}"
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap1')
+st.plotly_chart(fig,use_container_width=True,key='heatmap1',config=config)
 #Vẽ biểu đồ nhiệt theo SAH
 fig = px.imshow(
     df_line_eff_pivot,
@@ -446,7 +454,7 @@ fig.update_traces(
     text=df_line_SAH.values, 
     texttemplate="%{text:.0f}"
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap2')
+st.plotly_chart(fig,use_container_width=True,key='heatmap2',config=config)
 # #Vẽ biểu đồ nhiệt theo Eff - Style - SAH
 # df4['Eff_formated'] = (df4['SAH_A']/df4['Total_hours_A']).apply(lambda x: f"{x:.0%}")
 # df4['SAH_A_formated'] = df4['SAH_A'].apply(lambda x: f"{x:.0f}")
@@ -510,7 +518,7 @@ fig.update_yaxes(
 fig.update_traces(
     textfont = dict(size = 14)
 )
-st.plotly_chart(fig,use_container_width=True)
+st.plotly_chart(fig,use_container_width=True,config=config)
 # st.dataframe(df_line_style)
 with st.expander("Dữ liệu chi tiết"):
     st.dataframe(df4,hide_index=True)

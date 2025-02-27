@@ -26,6 +26,14 @@ reports = ['Tổng hợp','Công nhân Cắt','Công nhân may','Công nhân QC1
 bao_cao = st.sidebar.selectbox("Chọn báo cáo",options= reports,index=0)
 
 st.markdown(f'<h1 class="centered-title">BÁO CÁO THƯỞNG NĂNG SUẤT ({bao_cao})</h1>', unsafe_allow_html=True)
+#Config chung cho plotly chart
+config = {
+    'displayModeBar': True,  # Hiển thị/thêm thanh công cụ
+    'modeBarButtonsToRemove': ['zoom', 'select', 'lasso2d', 'resetScale', 'toImage'],  # Ẩn nút
+    'displaylogo': False,  # Ẩn logo Plotly
+    'modeBarButtonsToAdd': []  # Đảm bảo không thêm bất kỳ nút nào khác
+}
+
 if bao_cao == 'Công nhân may':
     df_cn_may = get_data(DB='INCENTIVE',query=f"SELECT * FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_CN_MAY WHERE NHA_MAY = '{nha_may}' ORDER BY CHUYEN")
     df_cn_may['XUONG'] = df_cn_may['CHUYEN'].str[0:1] + 'P0' + df_cn_may['CHUYEN'].str[1:2]
@@ -105,7 +113,7 @@ if bao_cao == 'Công nhân may':
         fig.update_traces(
             marker = dict(line = dict(width = 1,color = 'white')),
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
         # st.dataframe(df_cn_may_selected)
     with cols[2]:
         SCP_order = ['U','N','S','M']
@@ -129,7 +137,7 @@ if bao_cao == 'Công nhân may':
             textposition = 'inside',
             textfont = dict(size = 14)
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     cols = st.columns(3)
     with cols[0]:
         fig = px.histogram(
@@ -148,7 +156,7 @@ if bao_cao == 'Công nhân may':
         fig.update_traces(
             textposition = 'outside'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         SCP_order = ['U','N','S','M']
         fig = px.box(
@@ -168,7 +176,7 @@ if bao_cao == 'Công nhân may':
             title = "Phân bổ tiền thưởng theo bậc kỹ năng",
             yaxis_title = "Tiền thưởng"
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[2]:
         df_cn_may_selected_SCP = df_cn_may_selected.groupby(by="SCP").agg({"TONG_THUONG" : 'mean'}).reset_index()
         df_cn_may_selected_SCP['Tổng thưởng'] = df_cn_may_selected_SCP['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
@@ -194,7 +202,7 @@ if bao_cao == 'Công nhân may':
             title = 'Tiền thưởng trung bình theo bậc kỹ năng',
             yaxis_title = 'Tiền thưởng'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
 if bao_cao == 'Tổng hợp':
     df_nhom_cat = get_data(DB='INCENTIVE',query=f"""
                            SELECT NHA_MAY,NAM,THANG,MST,HO_TEN,CHUYEN,CHUC_VU,
@@ -294,7 +302,7 @@ if bao_cao == 'Tổng hợp':
         fig.update_xaxes(
             range = [0,max_tien]
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tbthuong = df['TONG_THUONG'].mean()
         st.metric("Trung bình tiền thưởng 1 công nhân",value=f"{tbthuong:,.0f} VNĐ")
@@ -323,7 +331,7 @@ if bao_cao == 'Tổng hợp':
         fig.update_xaxes(
             range = [0,max_tien_tb]
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     cols = st.columns([1,3])
     with cols[0]:
         df_xuong_nhom = df.groupby(by = ['XUONG','NHOM']).agg({'TONG_THUONG' : 'sum'}).reset_index()
@@ -336,7 +344,7 @@ if bao_cao == 'Tổng hợp':
             title= 'Phân bổ tổng tiền thưởng theo xưởng, nhóm'
         )
         
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         df_xuong_nhom_tb = df.groupby(by = ['XUONG','NHOM']).agg({'TONG_THUONG' : 'mean'}).reset_index()
         # st.write(df_xuong_nhom_tb)
@@ -356,7 +364,7 @@ if bao_cao == 'Tổng hợp':
             legend_title='Xưởng'
             )
         
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df)
 if bao_cao == 'Công nhân Cắt':
@@ -408,7 +416,7 @@ if bao_cao == 'Công nhân Cắt':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
         st.metric("Trung bình tiền thưởng công nhân Cắt",value=f"{tb_thuong:,.0f}")
@@ -434,7 +442,7 @@ if bao_cao == 'Công nhân Cắt':
         fig.update_traces(
             textposition = 'outside'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
     st.markdown("---")
@@ -468,7 +476,7 @@ if bao_cao == 'Công nhân Cắt':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line1')
+    st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
     df_nhom,
@@ -490,7 +498,7 @@ if bao_cao == 'Công nhân Cắt':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line2')
+    st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
 if bao_cao == 'Công nhân QC1':
@@ -546,7 +554,7 @@ if bao_cao == 'Công nhân QC1':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
         st.metric("Trung bình tiền thưởng công nhân QC1",value=f"{tb_thuong:,.0f}")
@@ -572,7 +580,7 @@ if bao_cao == 'Công nhân QC1':
         fig.update_traces(
             textposition = 'outside'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
     st.markdown("---")
@@ -606,7 +614,7 @@ if bao_cao == 'Công nhân QC1':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line1')
+    st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
     df_nhom,
@@ -628,7 +636,7 @@ if bao_cao == 'Công nhân QC1':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line2')
+    st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
 if bao_cao == 'Công nhân Là':
@@ -685,7 +693,7 @@ if bao_cao == 'Công nhân Là':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
         st.metric("Trung bình tiền thưởng công nhân Là",value=f"{tb_thuong:,.0f}")
@@ -711,7 +719,7 @@ if bao_cao == 'Công nhân Là':
         fig.update_traces(
             textposition = 'outside'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
     st.markdown("---")
@@ -745,7 +753,7 @@ if bao_cao == 'Công nhân Là':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line1')
+    st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
     df_nhom,
@@ -767,7 +775,7 @@ if bao_cao == 'Công nhân Là':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line2')
+    st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
 if bao_cao == 'Công nhân QC2':
@@ -824,7 +832,7 @@ if bao_cao == 'Công nhân QC2':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
         st.metric("Trung bình tiền thưởng công nhân QC2",value=f"{tb_thuong:,.0f}")
@@ -850,7 +858,7 @@ if bao_cao == 'Công nhân QC2':
         fig.update_traces(
             textposition = 'outside'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
     st.markdown("---")
@@ -884,7 +892,7 @@ if bao_cao == 'Công nhân QC2':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line1')
+    st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
     df_nhom,
@@ -906,7 +914,7 @@ if bao_cao == 'Công nhân QC2':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line2')
+    st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
 if bao_cao == 'Công nhân đóng gói':
@@ -956,7 +964,7 @@ if bao_cao == 'Công nhân đóng gói':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
         st.metric("Trung bình tiền thưởng công nhân đóng gói",value=f"{tb_thuong:,.0f}")
@@ -982,7 +990,7 @@ if bao_cao == 'Công nhân đóng gói':
         fig.update_traces(
             textposition = 'outside'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
     st.markdown("---")
@@ -1016,7 +1024,7 @@ if bao_cao == 'Công nhân đóng gói':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line1')
+    st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
     df_nhom,
@@ -1038,7 +1046,7 @@ if bao_cao == 'Công nhân đóng gói':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line2')
+    st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
 if bao_cao == 'Công nhân NDC':
@@ -1088,7 +1096,7 @@ if bao_cao == 'Công nhân NDC':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
         st.metric("Trung bình tiền thưởng công nhân dò kim",value=f"{tb_thuong:,.0f}")
@@ -1114,7 +1122,7 @@ if bao_cao == 'Công nhân NDC':
         fig.update_traces(
             textposition = 'outside'
         )
-        st.plotly_chart(fig,use_container_width=True)
+        st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
     st.markdown("---")
@@ -1147,7 +1155,7 @@ if bao_cao == 'Công nhân NDC':
     fig.update_traces(
         textposition = 'top center'
     )
-    st.plotly_chart(fig,use_container_width=True,key='line2')
+    st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
 if bao_cao == 'Công nhân phụ':
@@ -1200,7 +1208,7 @@ if bao_cao == 'Công nhân phụ':
     fig.update_traces(
         marker = dict(line = dict(width = 1, color = 'white'))
     )
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config = config)
     ###
     df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
     df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
@@ -1221,7 +1229,7 @@ if bao_cao == 'Công nhân phụ':
     fig.update_traces(
         textposition = 'outside'
     )
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
 
@@ -1275,7 +1283,7 @@ if bao_cao == 'Quản lý':
     fig.update_traces(
         marker = dict(line = dict(width = 1, color = 'white'))
     )
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config = config)
     ###
     df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
     df_chuc_vu['Trung bình thưởng'] = df_chuc_vu['TONG_THUONG'].apply(lambda x: f"{x:,.0f}")
@@ -1296,6 +1304,6 @@ if bao_cao == 'Quản lý':
     fig.update_traces(
         textposition = 'outside'
     )
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)

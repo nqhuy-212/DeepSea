@@ -173,7 +173,13 @@ df_Eff_pivot = df_ppc.pivot(index='Line',columns='WorkDate',values='Eff')
 #Ghép các bảng pivot vào thành bảng chiều dùng làm customdata
 customdata = np.dstack([df_SAH_pivot.values, df_Style_pivot.values,df_Short_Style_pivot.values,
                         df_Hours_pivot.values,df_Workers_pivot.values,df_SAM_pivot.values,df_Eff_pivot.values])
-
+#config chung cho các biểu đồ plotly
+config = {
+    'displayModeBar': True,  # Hiển thị/thêm thanh công cụ
+    'modeBarButtonsToRemove': ['zoom', 'select', 'lasso2d', 'resetScale', 'toImage'],  # Ẩn nút
+    'displaylogo': False,  # Ẩn logo Plotly
+    'modeBarButtonsToAdd': []  # Đảm bảo không thêm bất kỳ nút nào khác
+}
 #Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
     df_Eff_pivot,
@@ -212,7 +218,7 @@ fig.update_traces(
         # "<img src='%{customdata[2]}' style='width:100px;height:100px;'>"
     )
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap0')
+st.plotly_chart(fig,use_container_width=True,key='heatmap0',config=config)
 
 #Vẽ biểu đồ nhiệt theo short style
 fig = px.imshow(
@@ -251,7 +257,7 @@ fig.update_traces(
     text=df_Short_Style_pivot.values, 
     texttemplate="%{text}"
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap1')
+st.plotly_chart(fig,use_container_width=True,key='heatmap1',config=config)
 
 #Vẽ biểu đồ nhiệt theo số giờ làm việc
 fig = px.imshow(
@@ -290,7 +296,7 @@ fig.update_traces(
     text=df_Hours_pivot.values, 
     texttemplate="%{text}"
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap2')
+st.plotly_chart(fig,use_container_width=True,key='heatmap2',config=config)
 
 #Vẽ biểu đồ nhiệt theo Worker
 fig = px.imshow(
@@ -329,5 +335,5 @@ fig.update_traces(
     text=df_Workers_pivot.values, 
     texttemplate="%{text}"
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap3')
+st.plotly_chart(fig,use_container_width=True,key='heatmap3',config=config)
 

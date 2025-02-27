@@ -88,6 +88,12 @@ color_map = {
     'I': 'orange',
     'S': 'red'
 }
+config = {
+    'displayModeBar': True,  # Hiển thị/thêm thanh công cụ
+    'modeBarButtonsToRemove': ['zoom', 'select', 'lasso2d', 'resetScale', 'toImage'],  # Ẩn nút
+    'displaylogo': False,  # Ẩn logo Plotly
+    'modeBarButtonsToAdd': []  # Đảm bảo không thêm bất kỳ nút nào khác
+}
 # st.dataframe(df_danglamviec)
 cols = st.columns(3)
 with cols[0]:
@@ -104,7 +110,7 @@ with cols[0]:
         legend_title_text = "",
         yaxis_title = "Số người"
     )
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config= config)
 with cols[1]:
     fig = px.sunburst(
         df_danglamviec,
@@ -116,7 +122,7 @@ with cols[1]:
     fig.update_layout(
         title = "Phân bổ theo Heacount category và thâm niên",
     ) 
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config= config)
 with cols[2]:
     df_danglamviec_dropna = df_danglamviec.dropna(subset=['Tinh_TP', 'Quan_huyen'])
     df_danglamviec_dropna['Tinh_TP'] = df_danglamviec_dropna['Tinh_TP'].str.replace(r'Tỉnh|tỉnh','',regex=True)
@@ -131,7 +137,7 @@ with cols[2]:
     fig.update_layout(
         title = "Phân bổ theo địa lý",
     ) 
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config= config)
 
 st.markdown("---")
 st.subheader("Xu hướng biến động nhân sự")
@@ -180,7 +186,7 @@ fig.update_traces(
     textposition = 'top center',
     textfont = dict(size = 14)
 )
-st.plotly_chart(fig,use_container_width=True)
+st.plotly_chart(fig,use_container_width=True,config= config)
 # with st.expander("Dữ liệu biến động nhân sự chi tiết"):
 #     # theo xưởng
 #     ds_xuong = ['1P01','1P02','1P03','1P04','1P05','2P01','2P02','2P03','2P04','2P05']
@@ -313,7 +319,7 @@ with cols[0]:
         textposition = 'inside',
         textfont = dict(size = 16)
     )
-    st.plotly_chart(fig,use_container_width=True,key='pie1')
+    st.plotly_chart(fig,use_container_width=True,key='pie1',config= config)
 with cols[1]:
     fig = px.pie(
         df_tuyen_moi,
@@ -326,7 +332,7 @@ with cols[1]:
         textposition = 'inside',
         textfont = dict(size = 16)
     )
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config= config)
     # st.write(df_tuyen_moi)
 with cols[2]:
     df_tuyen_moi_groupby_chuc_danh = df_tuyen_moi.groupby(by=['CHUC_DANH','XUONG']).agg({'COUNT' : 'sum'}).reset_index()
@@ -351,7 +357,7 @@ with cols[2]:
         textposition = 'outside',
         textfont = dict(color = 'white' , size = 16)
     )
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config= config)
 with st.expander("Dữ liệu tuyển mới chi tiết"):
     st.dataframe(df_tuyen_moi)
 ###
@@ -386,7 +392,7 @@ with cols[0]:
         textposition = 'inside',
         textfont = dict(size = 16)
     )
-    st.plotly_chart(fig,use_container_width=True,key='pie2')
+    st.plotly_chart(fig,use_container_width=True,key='pie2',config= config)
 with cols[1]:
     fig = px.pie(
         df_nghi_viec,
@@ -399,7 +405,7 @@ with cols[1]:
         textposition = 'inside',
         textfont = dict(size = 16)
     )
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config= config)
 
 with cols[2]:
     df_nghi_viec_groupby_chuc_danh = df_nghi_viec.groupby(by=['CHUC_DANH','XUONG']).agg({'COUNT' : 'sum'}).reset_index()
@@ -423,7 +429,7 @@ with cols[2]:
         textposition = 'outside',
         textfont = dict(color = 'white' , size = 16)
     )
-    st.plotly_chart(fig,use_container_width=True)
+    st.plotly_chart(fig,use_container_width=True,config= config)
 with st.expander("Dữ liệu nghỉ việc chi tiết"):
     st.dataframe(df_nghi_viec)
 # ###

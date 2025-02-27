@@ -61,7 +61,13 @@ df_hourly_pivot_qty = df_hourly_groupby.pivot(index='Line',columns='Time',values
 # df_hourly_pivot_style
 # df_hourly_pivot_qty
 customdata = np.dstack([df_hourly_pivot_style.values, df_hourly_pivot_qty.values])
-
+#config chung cho các biểu đồ plotly
+config = {
+    'displayModeBar': True,  # Hiển thị/thêm thanh công cụ
+    'modeBarButtonsToRemove': ['zoom', 'select', 'lasso2d', 'resetScale', 'toImage'],  # Ẩn nút
+    'displaylogo': False,  # Ẩn logo Plotly
+    'modeBarButtonsToAdd': []  # Đảm bảo không thêm bất kỳ nút nào khác
+}
 fig = px.imshow(
     df_hourly_pivot,
     color_continuous_scale="RdYlGn",
@@ -83,7 +89,7 @@ fig.update_traces(
         "Qty: %{customdata[1]:.0f}"
     )
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap1')
+st.plotly_chart(fig,use_container_width=True,key='heatmap1',config=config)
 
 with st.expander("Dữ liệu chi tiết"):
     df_hourly
@@ -120,7 +126,7 @@ fig.update_yaxes(
     tickfont = dict(size = 14),
     dtick = 'D1'
 )
-st.plotly_chart(fig,use_container_width=True,key='heatmap2')
+st.plotly_chart(fig,use_container_width=True,key='heatmap2',config=config)
 with st.expander("Dữ liệu chi tiết"):
     df_daily_pivot
 st.markdown("---")
@@ -154,6 +160,6 @@ fig.update_layout(
 fig.update_traces(
     textposition = 'outside'
 )
-st.plotly_chart(fig,use_container_width=True)
+st.plotly_chart(fig,use_container_width=True,config=config)
 with st.expander("Dữ liệu chi tiết"):
     df_total
