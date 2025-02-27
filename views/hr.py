@@ -110,6 +110,8 @@ with cols[0]:
         legend_title_text = "",
         yaxis_title = "Số người"
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config= config)
 with cols[1]:
     fig = px.sunburst(
@@ -122,6 +124,8 @@ with cols[1]:
     fig.update_layout(
         title = "Phân bổ theo Heacount category và thâm niên",
     ) 
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config= config)
 with cols[2]:
     df_danglamviec_dropna = df_danglamviec.dropna(subset=['Tinh_TP', 'Quan_huyen'])
@@ -137,6 +141,8 @@ with cols[2]:
     fig.update_layout(
         title = "Phân bổ theo địa lý",
     ) 
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config= config)
 
 st.markdown("---")
@@ -186,6 +192,8 @@ fig.update_traces(
     textposition = 'top center',
     textfont = dict(size = 14)
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,config= config)
 # with st.expander("Dữ liệu biến động nhân sự chi tiết"):
 #     # theo xưởng
@@ -319,6 +327,8 @@ with cols[0]:
         textposition = 'inside',
         textfont = dict(size = 16)
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='pie1',config= config)
 with cols[1]:
     fig = px.pie(
@@ -332,6 +342,8 @@ with cols[1]:
         textposition = 'inside',
         textfont = dict(size = 16)
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config= config)
     # st.write(df_tuyen_moi)
 with cols[2]:
@@ -357,6 +369,8 @@ with cols[2]:
         textposition = 'outside',
         textfont = dict(color = 'white' , size = 16)
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config= config)
 with st.expander("Dữ liệu tuyển mới chi tiết"):
     st.dataframe(df_tuyen_moi)
@@ -392,6 +406,8 @@ with cols[0]:
         textposition = 'inside',
         textfont = dict(size = 16)
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='pie2',config= config)
 with cols[1]:
     fig = px.pie(
@@ -405,6 +421,8 @@ with cols[1]:
         textposition = 'inside',
         textfont = dict(size = 16)
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config= config)
 
 with cols[2]:
@@ -429,6 +447,8 @@ with cols[2]:
         textposition = 'outside',
         textfont = dict(color = 'white' , size = 16)
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config= config)
 with st.expander("Dữ liệu nghỉ việc chi tiết"):
     st.dataframe(df_nghi_viec)

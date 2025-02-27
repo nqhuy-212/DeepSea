@@ -136,6 +136,8 @@ fig.update_traces(
     textposition = 'top center',
     textfont = dict(size = 14)
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,config=config)
 
 st.markdown("---")
@@ -171,6 +173,8 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap0',config=config)
 ## Heatmap MAY
 df_may = df[df['NHOM']=='May']
@@ -203,6 +207,8 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap1',config=config)
 ## Heatmap QC MAY
 df_qcmay = df[df['NHOM']=='QC May']
@@ -235,6 +241,8 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap2',config=config)
 ## Heatmap LA
 df_la = df[df['NHOM']=='Là']
@@ -267,6 +275,8 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap3',config=config)
 ## Heatmap QC LA
 df_qcla = df[df['NHOM']=='QC Là']
@@ -299,6 +309,8 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap4',config=config)
 ## Heatmap HOAN THIEN
 df_hoanthien = df[df['NHOM']=='Hoàn thiện']
@@ -331,5 +343,7 @@ fig.update_traces(
     zmin=0,
     zmax=1,
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap5',config=config)
 
