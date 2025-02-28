@@ -113,6 +113,8 @@ if bao_cao == 'Công nhân may':
         fig.update_traces(
             marker = dict(line = dict(width = 1,color = 'white')),
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
         # st.dataframe(df_cn_may_selected)
     with cols[2]:
@@ -137,6 +139,8 @@ if bao_cao == 'Công nhân may':
             textposition = 'inside',
             textfont = dict(size = 14)
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     cols = st.columns(3)
     with cols[0]:
@@ -156,6 +160,8 @@ if bao_cao == 'Công nhân may':
         fig.update_traces(
             textposition = 'outside'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         SCP_order = ['U','N','S','M']
@@ -176,6 +182,8 @@ if bao_cao == 'Công nhân may':
             title = "Phân bổ tiền thưởng theo bậc kỹ năng",
             yaxis_title = "Tiền thưởng"
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[2]:
         df_cn_may_selected_SCP = df_cn_may_selected.groupby(by="SCP").agg({"TONG_THUONG" : 'mean'}).reset_index()
@@ -202,6 +210,8 @@ if bao_cao == 'Công nhân may':
             title = 'Tiền thưởng trung bình theo bậc kỹ năng',
             yaxis_title = 'Tiền thưởng'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
 if bao_cao == 'Tổng hợp':
     df_nhom_cat = get_data(DB='INCENTIVE',query=f"""
@@ -302,6 +312,8 @@ if bao_cao == 'Tổng hợp':
         fig.update_xaxes(
             range = [0,max_tien]
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tbthuong = df['TONG_THUONG'].mean()
@@ -331,6 +343,8 @@ if bao_cao == 'Tổng hợp':
         fig.update_xaxes(
             range = [0,max_tien_tb]
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     cols = st.columns([1,3])
     with cols[0]:
@@ -343,6 +357,7 @@ if bao_cao == 'Tổng hợp':
             values='TONG_THUONG',
             title= 'Phân bổ tổng tiền thưởng theo xưởng, nhóm'
         )
+        fig.update_layout(dragmode="pan")
         
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
@@ -363,6 +378,7 @@ if bao_cao == 'Tổng hợp':
             bargap=0.1,
             legend_title='Xưởng'
             )
+        fig.update_layout(dragmode="pan")
         
         st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
@@ -416,6 +432,8 @@ if bao_cao == 'Công nhân Cắt':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
@@ -442,6 +460,8 @@ if bao_cao == 'Công nhân Cắt':
         fig.update_traces(
             textposition = 'outside'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
@@ -476,6 +496,8 @@ if bao_cao == 'Công nhân Cắt':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
@@ -498,6 +520,8 @@ if bao_cao == 'Công nhân Cắt':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
@@ -554,6 +578,8 @@ if bao_cao == 'Công nhân QC1':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
@@ -580,6 +606,8 @@ if bao_cao == 'Công nhân QC1':
         fig.update_traces(
             textposition = 'outside'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
@@ -614,6 +642,8 @@ if bao_cao == 'Công nhân QC1':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
@@ -636,6 +666,8 @@ if bao_cao == 'Công nhân QC1':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
@@ -693,6 +725,8 @@ if bao_cao == 'Công nhân Là':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
@@ -719,6 +753,8 @@ if bao_cao == 'Công nhân Là':
         fig.update_traces(
             textposition = 'outside'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
@@ -753,6 +789,8 @@ if bao_cao == 'Công nhân Là':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
@@ -775,6 +813,8 @@ if bao_cao == 'Công nhân Là':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
@@ -832,6 +872,8 @@ if bao_cao == 'Công nhân QC2':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
@@ -858,6 +900,8 @@ if bao_cao == 'Công nhân QC2':
         fig.update_traces(
             textposition = 'outside'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
@@ -892,6 +936,8 @@ if bao_cao == 'Công nhân QC2':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
@@ -914,6 +960,8 @@ if bao_cao == 'Công nhân QC2':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
@@ -964,6 +1012,8 @@ if bao_cao == 'Công nhân đóng gói':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
@@ -990,6 +1040,8 @@ if bao_cao == 'Công nhân đóng gói':
         fig.update_traces(
             textposition = 'outside'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
@@ -1024,6 +1076,8 @@ if bao_cao == 'Công nhân đóng gói':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line1',config = config)
     ###
     fig = px.line(
@@ -1046,6 +1100,8 @@ if bao_cao == 'Công nhân đóng gói':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
@@ -1096,6 +1152,8 @@ if bao_cao == 'Công nhân NDC':
         fig.update_traces(
             marker = dict(line = dict(width = 1, color = 'white'))
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with cols[1]:
         tb_thuong = df_fitered['TONG_THUONG'].mean()
@@ -1122,6 +1180,8 @@ if bao_cao == 'Công nhân NDC':
         fig.update_traces(
             textposition = 'outside'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
@@ -1155,6 +1215,8 @@ if bao_cao == 'Công nhân NDC':
     fig.update_traces(
         textposition = 'top center'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='line2',config = config)
     with st.expander("Dữ liệu thưởng nhóm chi tiết"):
         st.dataframe(df_nhom)
@@ -1208,6 +1270,8 @@ if bao_cao == 'Công nhân phụ':
     fig.update_traces(
         marker = dict(line = dict(width = 1, color = 'white'))
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config = config)
     ###
     df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
@@ -1229,6 +1293,8 @@ if bao_cao == 'Công nhân phụ':
     fig.update_traces(
         textposition = 'outside'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)
@@ -1283,6 +1349,8 @@ if bao_cao == 'Quản lý':
     fig.update_traces(
         marker = dict(line = dict(width = 1, color = 'white'))
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config = config)
     ###
     df_chuc_vu = df_fitered.groupby(by=['XUONG','CHUC_VU']).agg({'TONG_THUONG' : 'mean'}).reset_index()
@@ -1304,6 +1372,8 @@ if bao_cao == 'Quản lý':
     fig.update_traces(
         textposition = 'outside'
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config = config)
     with st.expander("Dữ liệu chi tiết"):
         st.dataframe(df_fitered)

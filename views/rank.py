@@ -165,6 +165,8 @@ if chuyen_cong_nhan == "Xưởng":
             xaxis_title = 'Hiệu suất xưởng',
             yaxis_title = 'Xưởng'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
@@ -207,6 +209,8 @@ if chuyen_cong_nhan == "Xưởng":
         fig.update_xaxes(
             range=[0,max_tien_thuong]
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
@@ -249,6 +253,8 @@ if chuyen_cong_nhan == "Xưởng":
             range=[0,max_oql],
             tickformat = ",.0%"
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,key='bar0',config=config)
         ###    
 ###
@@ -301,6 +307,8 @@ if chuyen_cong_nhan == "Chuyền":
             xaxis_title = 'Hiệu suất chuyền',
             yaxis_title = 'Chuyền'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
@@ -343,6 +351,8 @@ if chuyen_cong_nhan == "Chuyền":
         fig.update_xaxes(
             range=[0,max_tien_thuong]
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
@@ -382,6 +392,8 @@ if chuyen_cong_nhan == "Chuyền":
             range=[0,max_oql],
             tickformat = ",.0%"
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,key='bar0',config=config)
         ###
 if chuyen_cong_nhan == "Công nhân":
@@ -430,6 +442,8 @@ if chuyen_cong_nhan == "Công nhân":
             xaxis_title = 'Hiệu suất cá nhân',
             yaxis_title = 'MST - Họ tên'
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,key='bar_cn1',config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):
@@ -472,6 +486,8 @@ if chuyen_cong_nhan == "Công nhân":
         fig.update_xaxes(
             range=[0,max_tien_thuong]
         )
+        fig.update_layout(dragmode="pan")
+
         st.plotly_chart(fig,use_container_width=True,key='bar_cn2',config=config)
         ###
         with st.expander("Dữ liệu chi tiết"):

@@ -183,6 +183,8 @@ fig.update_traces(
     textposition = 'top center',
     textfont = dict(size = 14),
 )
+fig.update_layout(dragmode="pan")
+
 #config chung cho các biểu đồ plotly
 config = {
     'displayModeBar': True,  # Hiển thị/thêm thanh công cụ
@@ -226,6 +228,8 @@ fig.update_traces(
     textposition = 'top center',
     textfont = dict(size = 14),
 )
+
+fig.update_layout(dragmode="pan")
 
 st.plotly_chart(fig,config= config,use_container_width=True)
 
@@ -274,6 +278,8 @@ with cols[0]:
         range = [0,max_SAH],
         # showticklabels = False
     )  
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,config=config)
 ## hiệu suất theo xưởng
 with cols[1]:
@@ -305,6 +311,8 @@ with cols[1]:
         range = [0,max_SAH],
         # showticklabels = False
     )
+    fig.update_layout(dragmode="pan")
+
     st.plotly_chart(fig,use_container_width=True,key='fig2',config=config)
 
 st.markdown("---")
@@ -381,6 +389,8 @@ fig.update_traces(
         # "<img src='%{customdata[2]}' style='width:100px;height:100px;'>"
     )
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap0',config=config)
 #Vẽ biểu đồ nhiệt theo short style
 fig = px.imshow(
@@ -418,6 +428,7 @@ fig.update_traces(
     text=df_line_short_style.values, 
     texttemplate="%{text}"
 )
+fig.update_layout(dragmode="pan")
 st.plotly_chart(fig,use_container_width=True,key='heatmap1',config=config)
 #Vẽ biểu đồ nhiệt theo SAH
 fig = px.imshow(
@@ -454,6 +465,7 @@ fig.update_traces(
     text=df_line_SAH.values, 
     texttemplate="%{text:.0f}"
 )
+fig.update_layout(dragmode="pan")
 st.plotly_chart(fig,use_container_width=True,key='heatmap2',config=config)
 # #Vẽ biểu đồ nhiệt theo Eff - Style - SAH
 # df4['Eff_formated'] = (df4['SAH_A']/df4['Total_hours_A']).apply(lambda x: f"{x:.0%}")
@@ -518,6 +530,7 @@ fig.update_yaxes(
 fig.update_traces(
     textfont = dict(size = 14)
 )
+fig.update_layout(dragmode="pan")
 st.plotly_chart(fig,use_container_width=True,config=config)
 # st.dataframe(df_line_style)
 with st.expander("Dữ liệu chi tiết"):

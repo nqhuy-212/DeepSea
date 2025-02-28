@@ -89,6 +89,8 @@ fig.update_traces(
         "Qty: %{customdata[1]:.0f}"
     )
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap1',config=config)
 
 with st.expander("Dữ liệu chi tiết"):
@@ -126,6 +128,8 @@ fig.update_yaxes(
     tickfont = dict(size = 14),
     dtick = 'D1'
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap2',config=config)
 with st.expander("Dữ liệu chi tiết"):
     df_daily_pivot
@@ -160,6 +164,8 @@ fig.update_layout(
 fig.update_traces(
     textposition = 'outside'
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,config=config)
 with st.expander("Dữ liệu chi tiết"):
     df_total

@@ -218,6 +218,8 @@ fig.update_traces(
         # "<img src='%{customdata[2]}' style='width:100px;height:100px;'>"
     )
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap0',config=config)
 
 #Vẽ biểu đồ nhiệt theo short style
@@ -257,6 +259,8 @@ fig.update_traces(
     text=df_Short_Style_pivot.values, 
     texttemplate="%{text}"
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap1',config=config)
 
 #Vẽ biểu đồ nhiệt theo số giờ làm việc
@@ -296,6 +300,8 @@ fig.update_traces(
     text=df_Hours_pivot.values, 
     texttemplate="%{text}"
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap2',config=config)
 
 #Vẽ biểu đồ nhiệt theo Worker
@@ -335,5 +341,7 @@ fig.update_traces(
     text=df_Workers_pivot.values, 
     texttemplate="%{text}"
 )
+fig.update_layout(dragmode="pan")
+
 st.plotly_chart(fig,use_container_width=True,key='heatmap3',config=config)
 
