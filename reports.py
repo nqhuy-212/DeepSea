@@ -28,20 +28,20 @@ rank_page = st.Page(
 
 sumary_page = st.Page(
     page="views/summary.py",
-    title= "Báo cáo tổng hợp",
+    title= "Kết quả sản xuất",
     icon= ':material/bar_chart:',
     default= True
 )
 
 incentive_page = st.Page(
     page="views/incentive.py",
-    title= "Báo cáo thưởng năng suất",
+    title= "Thưởng",
     icon= ':material/attach_money:'
 )
 
 hr_page = st.Page(
     page="views/hr.py",
-    title= "Báo cáo nhân sự",
+    title= "Nhân sự",
     icon= ':material/group:'
 )
 
@@ -53,13 +53,13 @@ tnc_page = st.Page(
 
 salary_page = st.Page(
     page="views/salary.py",
-    title= "Báo cáo lương",
+    title= "Lương",
     icon= ':material/credit_card:'
 )
 
 hourly_page = st.Page(
     page="views/hourly.py",
-    title= "Báo cáo dập thẻ hàng giờ",
+    title= "Sản lượng dập thẻ",
     icon= ':material/timer:'
 )
 
@@ -83,13 +83,13 @@ chat_page = st.Page(
 
 ppc_page = st.Page(
     page="views/PPC.py",
-    title= "Báo cáo PPC",
+    title= "Kế hoạch",
     icon= ':material/target:'
 )
 
 OQL_page = st.Page(
     page="views/OQL.py",
-    title= "Tỉ lệ lỗi",
+    title= "Chất lượng",
     icon= ':material/sentiment_dissatisfied:'
 )
 
@@ -126,7 +126,13 @@ else:
     # if st.sidebar.button("Làm mới dữ liệu"):
     #     st.rerun()
     pg = st.navigation(pages={
-    'Chọn trang' :[sumary_page,hr_page,incentive_page,hourly_page,ppc_page,OQL_page,salary_page,QCO_page,map_page,rank_page]})   
+    'Kết quả sản xuất' : [sumary_page],
+    'Bảng xếp hạng' : [rank_page],
+    'Nhân sự' : [hr_page,map_page],
+    'Kế hoạch' : [ppc_page],
+    'Chất lượng' : [OQL_page],
+    'Hệ thống' :[salary_page,incentive_page,hourly_page]   
+    })   
     pg.run()
 
 
