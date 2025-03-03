@@ -1,7 +1,9 @@
 import streamlit as st 
+from streamlit_js_eval import streamlit_js_eval
 from load_data import get_data
 import pandas as pd
 import plotly.express as px
+
 
 st.logo("logo_white.png",size= 'large')
 st.markdown(
@@ -125,22 +127,33 @@ if chuyen_cong_nhan == "Xưởng":
     df_xuong_groupby['Tổng thưởng'] = df_xuong_groupby['TONG_THUONG'].apply(lambda x: f"{x/1_000_000:,.1f} triệu")
     df_xuong_groupby['TEN_XUONG2'] = df_xuong_groupby['TEN_XUONG'] + '-' + df_xuong_groupby['XUONG']
     # df_xuong_groupby
+
     if rp_type == "Hiệu suất":
-        col1,col2,col3 = st.columns(3)
+        is_mobile = streamlit_js_eval(js_expressions="window.innerWidth < 768", want_output=True)
+
+        if is_mobile:
+            col1, col2, col3 = st.columns(3) 
+            col1, col2 = col2, col1 
+        else:
+            col1, col2, col3 = st.columns(3) 
+
         with col2:
             xuong_num_1 = df_xuong_groupby.sort_values('Hiệu suất',ascending=False).iloc[0,0]
             # hieu_suat_num_1 = df_chuyen_groupby.sort_values('Hiệu suất',ascending=False).iloc[0,5]
             st.metric("Chuyền vô địch",value= f"{xuong_num_1}🥇")
             # st.metric("Hiệu suất", value= f"{hieu_suat_num_1}")
         with col1:
-            st.metric("",value="")
+            if not is_mobile:
+                st.metric("",value="")
             xuong_num_2 = df_xuong_groupby.sort_values('Hiệu suất',ascending=False).iloc[1,0]
             st.metric("Chuyền Á quân",value= f"{xuong_num_2}🥈")
         with col3:
-            st.metric("",value="")
-            st.metric("",value="")
+            if not is_mobile:
+                st.metric("",value="")
+                st.metric("",value="")
             xuong_num_3 = df_xuong_groupby.sort_values('Hiệu suất',ascending=False).iloc[2,0]
             st.metric("Chuyền hạng 3",value= f"{xuong_num_3}🥉")
+
         st.markdown("---")
 
         fig = px.bar(
