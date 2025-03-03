@@ -28,6 +28,7 @@ df_danglamviec = get_data(DB='HR',query=f"Select * from Danh_sach_CBCNV where tr
 df_nghithaisan = get_data(DB='HR',query=f"Select * from Danh_sach_CBCNV where trang_thai_lam_viec = N'Nghỉ thai sản' and Factory = '{nha_may}'")
 df_dilam = get_data(DB='HR',query=f"Select * from Cham_cong_sang where Factory = '{nha_may}' and Gio_vao is not null")
 df_TGLV = get_data('HR',f"SELECT * FROM TONG_TGLV_DEEPSEA WHERE NHA_MAY = '{nha_may}'")
+df_TGLV_so_CN_chuyen = get_data('HR',f"SELECT * FROM SO_CN_TONG_TGLV_THEO_CHUYEN_DEEPSEA WHERE NHA_MAY = '{nha_may}'")
 
 #các tính toán cần thiết
 tong_hc = df_danglamviec['MST'].count()
@@ -238,6 +239,10 @@ df_TGLV['NGAY'] = pd.to_datetime(df_TGLV['NGAY'])
 df_TGLV = df_TGLV.query('NGAY >= @start_date and NGAY <= @end_date')
 df_TGLV = df_TGLV.sort_values('NGAY',ascending=True)
 df_TGLV['Tổng số giờ'] = df_TGLV['HC'] + df_TGLV['OT'] + df_TGLV['OT_CN']
+###
+df_TGLV_so_CN_chuyen['NGAY'] = pd.to_datetime(df_TGLV_so_CN_chuyen['NGAY'])
+df_TGLV_so_CN_chuyen = df_TGLV_so_CN_chuyen.query('NGAY >= @start_date and NGAY <= @end_date')
+df_TGLV_so_CN_chuyen = df_TGLV_so_CN_chuyen.sort_values(['NGAY','CHUYEN'],ascending=True)
 
 cols = st.columns(5)
 with cols[0]:
@@ -292,7 +297,12 @@ with st.expander("Dữ liệu chi tiết theo ngày"):
     df_TGLV['OT_CN'] = df_TGLV['OT_CN'].apply(lambda x : f"{x:,.0f}")
     df_TGLV['Tổng số giờ'] = df_TGLV['Tổng số giờ'].apply(lambda x : f"{x:,.0f}")
     df_TGLV['NGAY'] = df_TGLV['NGAY'].dt.date
+    st.markdown('Block')
     df_TGLV
+    df_TGLV_so_CN_chuyen = df_TGLV_so_CN_chuyen.drop(columns=['NHA_MAY'])
+    df_TGLV_so_CN_chuyen['NGAY'] = df_TGLV_so_CN_chuyen['NGAY'].dt.date
+    st.markdown('Chuyền')
+    df_TGLV_so_CN_chuyen
 
 st.markdown("---")
 st.subheader("Tuyển mới")

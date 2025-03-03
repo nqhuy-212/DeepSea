@@ -180,6 +180,48 @@ config = {
     'displaylogo': False,  # Ẩn logo Plotly
     'modeBarButtonsToAdd': []  # Đảm bảo không thêm bất kỳ nút nào khác
 }
+#Vẽ biểu đồ nhiệt theo SAH
+fig = px.imshow(
+    df_SAH_pivot,
+    color_continuous_scale= "RdYlGn",
+    # color_continuous_midpoint=0.5,
+    text_auto= True)
+fig.update_xaxes(
+    dtick = 'D1',
+    tickformat = '%d/%m',
+    tickfont = dict(size = 12)
+)
+fig.update_yaxes(
+    tickfont = dict(size = 14),
+    dtick = 'D1'
+)
+num_row = df_SAH_pivot.shape[0]
+row_hight = 35
+fig.update_layout(
+    title = "SAH",
+    xaxis_title = "Ngày",
+    yaxis_title = "Chuyền",
+    height = num_row * row_hight
+)
+fig.update_traces(
+    customdata=customdata,
+    texttemplate='%{z:.0f}',
+    textfont=dict(size=14),
+    zmin=0,
+    zmax=1,
+    hovertemplate=(
+        "Style: %{customdata[1]}<br>"
+        "SAM: %{customdata[5]:.4f}<br>"
+        "Eff: %{customdata[6]:.0%}<br>"
+        "Hours: %{customdata[3]:.1f}<br>"
+        "Worker: %{customdata[4]:.0f}<br>"
+        # "<img src='%{customdata[2]}' style='width:100px;height:100px;'>"
+    )
+)
+fig.update_layout(dragmode="pan")
+
+st.plotly_chart(fig,use_container_width=True,key='heatmap4',config=config)
+
 #Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
     df_Eff_pivot,
