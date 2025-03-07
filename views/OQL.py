@@ -45,7 +45,7 @@ df['NGAY'] = pd.to_datetime(df['NGAY'], format='%Y-%m-%d')
 df['NGAY'] = df['NGAY'].dt.date
 
 ###########################
-fty = ['NT1','NT2']
+fty = ['NT1','NT2', 'NT3']
 sel_fty = st.sidebar.selectbox("Chọn nhà máy:",options = fty,index=fty.index(st.session_state.factory))
 unit = df[df['NHA_MAY'] == sel_fty]['XUONG'].unique()
 unit_sorted = sorted(unit, reverse= False)

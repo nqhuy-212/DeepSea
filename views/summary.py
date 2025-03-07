@@ -42,6 +42,12 @@ df3 = get_data('DW',"SELECT * FROM HR_INCLUDE_TNC WHERE KOIS = 'K'  AND WORKDATE
 df = pd.merge(df1,df2, on = ['WorkDate','Line'], how= 'left')
 df = pd.merge(df,df3, on=['WorkDate','Line'], how= 'left')
 
+df = df.drop(columns='Fty')
+df['Fty'] = 'NT' + df["Line"].str[0:1]
+
+df = df.drop(columns='Unit')
+df['Unit'] = df["Line"].str[0:1] + 'P0' + df["Line"].str[1:2]
+
 #di chuyển cột
 move_col = df.pop('Fty')
 df.insert(0,'Fty',move_col)
@@ -62,7 +68,7 @@ df['Total_hours_P'] = df['Hours_P'] * df['Worker_P'] * df['Attn_P']
 df['WS*Hours_A'] = df['Worker_A']*df['Hours_A']
 
 ###########################
-fty = ['NT1','NT2']
+fty = ['NT1','NT2', 'NT3']
 sel_fty = st.sidebar.multiselect("Chọn nhà máy:",options = fty,default=fty)
 unit = df[df['Fty'].isin(sel_fty)]['Unit'].unique()
 unit_sorted = sorted(unit, reverse= False)
@@ -353,6 +359,7 @@ df_line_SAM = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAM')
 
 customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values,df_line_SAM])
 
+df_line_eff_pivot
 #Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
     df_line_eff_pivot,
@@ -370,11 +377,12 @@ fig.update_yaxes(
 )
 num_row = df_line_eff_pivot.shape[0]
 row_hight = 35
+min_height = 300
 fig.update_layout(
     title = "Biểu đồ nhiệt - Hiệu suất chuyền theo ngày",
     xaxis_title = "Ngày",
     yaxis_title = "Chuyền",
-    height = num_row * row_hight,
+    height = max(num_row * row_hight, min_height)
 )
 fig.update_traces(
     customdata=customdata,
@@ -389,6 +397,7 @@ fig.update_traces(
         # "<img src='%{customdata[2]}' style='width:100px;height:100px;'>"
     )
 )
+
 fig.update_layout(dragmode="pan")
 
 st.plotly_chart(fig,use_container_width=True,key='heatmap0',config=config)
@@ -412,7 +421,7 @@ fig.update_layout(
     title = "Style_P",
     xaxis_title = "Ngày",
     yaxis_title = "Chuyền",
-    height = num_row * row_hight
+    height = max(num_row * row_hight, min_height)
 )
 fig.update_traces(
     customdata = customdata,
@@ -450,7 +459,7 @@ fig.update_layout(
     title = "SAH",
     xaxis_title = "Ngày",
     yaxis_title = "Chuyền",
-    height = num_row * row_hight
+    height = max(num_row * row_hight, min_height)
 )
 fig.update_traces(
     customdata = customdata,

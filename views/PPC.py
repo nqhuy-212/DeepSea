@@ -28,7 +28,7 @@ st.markdown(
 )
 st.markdown(f'<h1 class="centered-title">BÁO CÁO PPC</h1>', unsafe_allow_html=True)
 #######
-fty = ['NT1','NT2']
+fty = ['NT1','NT2', 'NT3']
 sel_fty = st.sidebar.multiselect("Chọn nhà máy:",options = fty,default=fty)
 
 df_ppc = get_data("DW",f"SELECT * FROM PPC WHERE WORKDATE >= '2024-09-01' ORDER BY WORKDATE DESC,LINE")

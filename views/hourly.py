@@ -23,7 +23,7 @@ st.markdown(
 )
 st.markdown(f'<h1 class="centered-title">BÁO CÁO DẬP THẺ ETS HÀNG GIỜ</h1>', unsafe_allow_html=True)
 
-fty = ['NT1','NT2']
+fty = ['NT1','NT2', 'NT3']
 sel_fty = st.sidebar.selectbox("Chọn nhà máy:",options = fty,index=fty.index(st.session_state.factory))
 
 df_hourly = get_data("DW",f"SELECT * FROM ETS_DAP_THE_HANG_GIO WHERE 'NT' + LEFT(LINE,1) = '{sel_fty}' ORDER BY Time_Stamp")
