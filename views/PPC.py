@@ -197,11 +197,12 @@ fig.update_yaxes(
 )
 num_row = df_SAH_pivot.shape[0]
 row_hight = 35
+min_height = 300
 fig.update_layout(
     title = "SAH",
     xaxis_title = "Ngày",
     yaxis_title = "Chuyền",
-    height = num_row * row_hight
+    height = max(num_row * row_hight, min_height)
 )
 fig.update_traces(
     customdata=customdata,
@@ -243,7 +244,7 @@ fig.update_layout(
     title = "Hiệu suất",
     xaxis_title = "Ngày",
     yaxis_title = "Chuyền",
-    height = num_row * row_hight
+    height = max(num_row * row_hight, min_height)
 )
 fig.update_traces(
     customdata=customdata,
@@ -284,7 +285,7 @@ fig.update_layout(
     title = "Style",
     xaxis_title = "Ngày",
     yaxis_title = "Chuyền",
-    height = num_row * row_hight
+    height = max(num_row * row_hight, min_height)
 )
 fig.update_traces(
     customdata = customdata,
@@ -325,7 +326,7 @@ fig.update_layout(
     title = "Số giờ làm việc",
     xaxis_title = "Ngày",
     yaxis_title = "Chuyền",
-    height = num_row * row_hight
+    height = max(num_row * row_hight, min_height)
 )
 fig.update_traces(
     customdata = customdata,
@@ -366,7 +367,7 @@ fig.update_layout(
     title = "Số công nhân may",
     xaxis_title = "Ngày",
     yaxis_title = "Chuyền",
-    height = num_row * row_hight
+    height = max(num_row * row_hight, min_height)
 )
 fig.update_traces(
     customdata = customdata,
