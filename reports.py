@@ -39,6 +39,12 @@ incentive_page = st.Page(
     icon= ':material/attach_money:'
 )
 
+incentive_time_page = st.Page(
+    page="views/incentive_time.py",
+    title= "Thưởng theo tháng",
+    icon= ':material/attach_money:'
+)
+
 hr_page = st.Page(
     page="views/hr.py",
     title= "Nhân sự",
@@ -131,7 +137,7 @@ else:
     'Nhân sự' : [hr_page,map_page],
     'Kế hoạch' : [ppc_page],
     'Chất lượng' : [OQL_page],
-    'Hệ thống' :[salary_page,incentive_page,hourly_page]   
+    'Hệ thống' :[salary_page,incentive_page,incentive_time_page,hourly_page]   
     })   
     pg.run()
 
