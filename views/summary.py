@@ -330,16 +330,6 @@ df_line_eff = df4.groupby(by = ['WorkDate','Line']).agg({
 
 df_line_eff['Eff_A'] = df_line_eff['SAH_A']/df_line_eff['Total_hours_A']
 
-df_line_eff_pivot = pd.pivot_table(data=df_line_eff,index='Line',columns='WorkDate',values='Eff_A')
-df4['Style_P_short'] = df4['Style_P'].str[-4:]
-df_line_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P')
-df_line_short_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P_short')
-df_line_SAH = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAH_A')
-
-image_folder = "images/png/"
-df4['Link_anh'] = image_folder + df4['Style_P'] + '.png'
-df_line_link_anh = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Link_anh')
-
 #Lấy SAM bên Incentive
 df_SAM = get_data("INCENTIVE","""
                   SELECT STYLE AS Style_P ,TU_NGAY,DEN_NGAY , SUM(SAM) AS SAM
@@ -354,6 +344,17 @@ df_SAM['DEN_NGAY'] = pd.to_datetime(df_SAM['DEN_NGAY'])
 df4 = pd.merge(df4,df_SAM,on='Style_P',how='left')
 df4 = df4[(df4['WorkDate'] >= df4['TU_NGAY']) & (df4['WorkDate'] <= df4['DEN_NGAY'])]
 df4 = df4.loc[df4.groupby(["Line", "Style_P", "WorkDate"])["TU_NGAY"].idxmin()]
+
+df_line_eff_pivot = pd.pivot_table(data=df_line_eff,index='Line',columns='WorkDate',values='Eff_A')
+df4['Style_P_short'] = df4['Style_P'].str[-4:]
+df_line_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P')
+df_line_short_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P_short')
+df_line_SAH = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAH_A')
+
+image_folder = "images/png/"
+df4['Link_anh'] = image_folder + df4['Style_P'] + '.png'
+df_line_link_anh = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Link_anh')
+
 #pivot lấy bảng SAM
 df_line_SAM = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAM')
 #Ghép các bảng pivot vào thành bảng chiều dùng làm customdata
