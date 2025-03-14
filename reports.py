@@ -41,7 +41,7 @@ incentive_page = st.Page(
 
 incentive_time_page = st.Page(
     page="views/incentive_time.py",
-    title= "Thưởng theo tháng",
+    title= "Thưởng qua các tháng",
     icon= ':material/attach_money:'
 )
 
