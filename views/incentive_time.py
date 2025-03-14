@@ -123,7 +123,7 @@ if bao_cao == 'Công nhân Cắt':
                            FROM TONG_HOP_TGLV_TONG_THUONG_CN_CAT WHERE NHA_MAY in ({', '.join(f'\'{item}\'' for item in nha_may)})
                            """)
     
-    drawPlot(df, 'cắt')
+    drawPlot(df, 'Cắst')
 
 if bao_cao == 'Công nhân may':
     df = get_data(DB='INCENTIVE',query=f"""
@@ -131,7 +131,7 @@ if bao_cao == 'Công nhân may':
                         TONG_TGLV,TONG_THUONG,SO_NGAY,'May' as NHOM
                         FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_CN_MAY WHERE NHA_MAY in ({', '.join(f'\'{item}\'' for item in nha_may)}) 
                         """)
-    drawPlot(df, 'may')
+    drawPlot(df, 'May')
 
 if bao_cao == 'Công nhân QC1':
     df = get_data(DB='INCENTIVE',query=f"""
@@ -139,7 +139,7 @@ if bao_cao == 'Công nhân QC1':
                         TONG_TGLV,TONG_THUONG,SO_NGAY,N'QC1' as NHOM
                         FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_TGLV_QC1 WHERE NHA_MAY in ({', '.join(f'\'{item}\'' for item in nha_may)})
                         """)
-    drawPlot(df, 'qc1')
+    drawPlot(df, 'QC1')
 
 if bao_cao == 'Công nhân Là':
     df = get_data(DB='INCENTIVE',query=f"""
@@ -147,7 +147,7 @@ if bao_cao == 'Công nhân Là':
                         TONG_TGLV,TONG_THUONG,SO_NGAY,N'Là' as NHOM
                         FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_TGLV_LA WHERE NHA_MAY in ({', '.join(f'\'{item}\'' for item in nha_may)})
                         """)
-    drawPlot(df, 'là')
+    drawPlot(df, 'Là')
 
 if bao_cao == 'Công nhân QC2':
     df = get_data(DB='INCENTIVE',query=f"""
@@ -155,7 +155,7 @@ if bao_cao == 'Công nhân QC2':
                            TONG_TGLV,TONG_THUONG,SO_NGAY,N'QC2' as NHOM
                            FROM TONG_HOP_TIEN_THUONG_HIEU_SUAT_TGLV_QC2 WHERE NHA_MAY in ({', '.join(f'\'{item}\'' for item in nha_may)})
                            """)
-    drawPlot(df, 'qc2')
+    drawPlot(df, 'QC2')
 
 if bao_cao == 'Công nhân đóng gói':
     df = get_data(DB='INCENTIVE',query=f"""
@@ -163,7 +163,7 @@ if bao_cao == 'Công nhân đóng gói':
                            TGLV AS TONG_TGLV,TONG_THUONG,SO_NGAY,N'Hoàn thiện' as NHOM
                            FROM TONG_HOP_TGLV_TONG_THUONG_CN_DONG_GOI WHERE NHA_MAY in ({', '.join(f'\'{item}\'' for item in nha_may)})
                            """)
-    drawPlot(df, 'đóng gói')
+    drawPlot(df, 'Đóng gói')
 
 if bao_cao == 'Công nhân NDC':
     df = get_data(DB='INCENTIVE',query=f"""
@@ -179,7 +179,7 @@ if bao_cao == 'Công nhân phụ':
                            TGLV AS TONG_TGLV,TONG_THUONG,SO_NGAY,N'CN Phụ' as NHOM
                            FROM TONG_HOP_TGLV_TONG_THUONG_CN_PHU WHERE NHA_MAY in ({', '.join(f'\'{item}\'' for item in nha_may)})
                            """)
-    drawPlot(df, 'phụ')
+    drawPlot(df, 'Phụ')
 
 if bao_cao == 'Quản lý':
     df = get_data(DB='INCENTIVE',query=f"""
@@ -187,4 +187,4 @@ if bao_cao == 'Quản lý':
                            TGLV AS TONG_TGLV,TONG_THUONG,SO_NGAY,N'Quản lý' as NHOM
                            FROM TONG_HOP_TGLV_TONG_THUONG_QUAN_LY WHERE NHA_MAY in ({', '.join(f'\'{item}\'' for item in nha_may)})
                            """)
-    drawPlot(df, 'quản lý')
+    drawPlot(df, 'Quản lý')
