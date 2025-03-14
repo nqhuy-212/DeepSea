@@ -353,6 +353,7 @@ df_SAM['DEN_NGAY'] = pd.to_datetime(df_SAM['DEN_NGAY'])
 #Ghép bảng df4 và bảng SAM
 df4 = pd.merge(df4,df_SAM,on='Style_P',how='left')
 df4 = df4[(df4['WorkDate'] >= df4['TU_NGAY']) & (df4['WorkDate'] <= df4['DEN_NGAY'])]
+df4 = df4.loc[df4.groupby(["Line", "Style_P", "WorkDate"])["TU_NGAY"].idxmin()]
 #pivot lấy bảng SAM
 df_line_SAM = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAM')
 #Ghép các bảng pivot vào thành bảng chiều dùng làm customdata
