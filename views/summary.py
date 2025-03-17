@@ -28,6 +28,9 @@ st.markdown(
 )
 
 df1 = get_data('DW','SELECT * FROM ETS_5 WHERE WORKDATE < CAST(GETDATE() AS DATE)')
+min_date = df1['WorkDate'].min()
+max_date = df1['WorkDate'].max()
+
 df1= df1.groupby(by=['WorkDate','Line']).agg({
     'Total_Qty':'sum',
     'SAH_A' : 'sum'
@@ -39,7 +42,7 @@ df3 = get_data('DW',"SELECT * FROM HR_INCLUDE_TNC WHERE KOIS = 'K'  AND WORKDATE
 # st.dataframe(df3)
 
 #ghép các bảng với nhau
-df = pd.merge(df1,df2, on = ['WorkDate','Line'], how= 'left')
+df = pd.merge(df2,df1, on = ['WorkDate','Line'], how= 'left')
 df = pd.merge(df,df3, on=['WorkDate','Line'], how= 'left')
 
 df = df.drop(columns='Fty')
@@ -63,7 +66,7 @@ df = df[df['Fty'] != 'nan']
 #chuyển cột WorkDate về dạng date
 df['WorkDate'] = pd.to_datetime(df['WorkDate'], format='%Y-%m-%d')
 df['WorkDate'] = df['WorkDate'].dt.date
-df['Attn_P'] = df.apply(lambda row: 0.93 if row['Fty'] == 'NT2' else 0.9,axis=1)
+df['Attn_P'] = df.apply(lambda row: 0.93 if row['Fty'] == 'NT2' or row['Fty'] == 'NT3' else 0.9,axis=1)
 df['Total_hours_P'] = df['Hours_P'] * df['Worker_P'] * df['Attn_P']
 df['WS*Hours_A'] = df['Worker_A']*df['Hours_A']
 
@@ -74,12 +77,10 @@ unit = df[df['Fty'].isin(sel_fty)]['Unit'].unique()
 unit_sorted = sorted(unit, reverse= False)
 sel_unit = st.sidebar.multiselect("Chọn xưởng:", options= unit, default= unit_sorted)
 
-min_date = df['WorkDate'].min()
 today = date.today() if date.today().day >1 else date.today() - timedelta(days=1)
 first_day_of_month =  today.replace(day=1)
 start_date = st.sidebar.date_input(label="Từ ngày:",value= first_day_of_month)
 
-max_date = df['WorkDate'].max()
 end_date = st.sidebar.date_input(label="Đến ngày:", value= max_date)
 
 styles = df[
