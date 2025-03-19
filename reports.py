@@ -33,6 +33,12 @@ sumary_page = st.Page(
     default= True
 )
 
+eff_style = st.Page(
+    page="views/eff_style.py",
+    title= "Hiệu suất theo style",
+    icon= ':material/bar_chart:'
+)
+
 incentive_page = st.Page(
     page="views/incentive.py",
     title= "Thưởng",
@@ -132,7 +138,7 @@ else:
     # if st.sidebar.button("Làm mới dữ liệu"):
     #     st.rerun()
     pg = st.navigation(pages={
-    'Kết quả sản xuất' : [sumary_page],
+    'Kết quả sản xuất' : [sumary_page, eff_style],
     'Bảng xếp hạng' : [rank_page],
     'Nhân sự' : [hr_page,map_page],
     'Kế hoạch' : [ppc_page],
