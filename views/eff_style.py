@@ -58,16 +58,18 @@ valid_fac_str = ", ".join(valid_fac)
 style_conditions = " OR ".join([f"STYLE LIKE '%{style}%'" for style in sel_style])
 df3 = get_data("INCENTIVE",f"SELECT NGAY, MST, HO_TEN, CHUYEN, SCP, STYLE, TGLV, EFF FROM thuong_cn_may_hang_ngay_chi_tiet WHERE LEFT(CHUYEN, 1) IN ({valid_fac_str}) AND NGAY BETWEEN '{start_date}' AND '{end_date}' AND ({style_conditions}) ORDER BY NGAY")
 
+f"SELECT NGAY, MST, HO_TEN, CHUYEN, SCP, STYLE, TGLV, EFF FROM thuong_cn_may_hang_ngay_chi_tiet WHERE LEFT(CHUYEN, 1) IN ({valid_fac_str}) AND NGAY BETWEEN '{start_date}' AND '{end_date}' AND ({style_conditions}) ORDER BY NGAY"
 df3['Efficiency'] = df3['EFF'].map(lambda x: f"{x*100:.2f}%")
 df3 = df3.drop(columns=['EFF'])
 
+df1
 df_merged = pd.merge(df3, df1, 
-                     left_on=['CHUYEN', 'STYLE', 'NGAY'],
-                     right_on=['LINE', 'STYLE_A', 'WorkDate'],  
-                     how='inner')
+                    left_on=['CHUYEN', 'STYLE', 'NGAY'],
+                    right_on=['LINE', 'STYLE_A', 'WorkDate'],  
+                    how='inner')
 
 df_merged.drop(columns=['LINE', 'STYLE_A', 'WorkDate'], inplace=True)
 move_col = df_merged.pop('SAM')
 df_merged.insert(6,'SAM',move_col)
 
-st.dataframe(df_merged,hide_index=True, use_container_width=True)
+st.dataframe(df3,hide_index=True, use_container_width=True)
