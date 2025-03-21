@@ -47,12 +47,22 @@ with cols[0]:
 with cols[1]:
     cn_may = df_danglamviec[df_danglamviec['Headcount_category'] == "K"]['MST'].count()
     hc_ratio = (tong_hc-cn_may)/cn_may
+    
+    cn_may_tnc = cn_may_tnc = df_danglamviec[
+        (df_danglamviec['Headcount_category'].notna() & (df_danglamviec['Headcount_category'] == "K")) | 
+        (df_danglamviec['Section_code'].notna() & (df_danglamviec['Section_code'] == "1TNC"))
+    ]['MST'].count()
+    
+    hc_ratio2 = cn_may_tnc/(tong_hc-cn_may_tnc)
+    
     st.info('Công nhân may công nghiệp',icon= "👷" )
-    col1,col2 = st.columns(2)
+    col1,col2,col3 = st.columns(3)
     with col1:      
         st.metric(label="Công nhân may",value= f'{cn_may:,.0f}')
     with col2: 
         st.metric(label="Headcount ratio",value= f'{hc_ratio:,.2f}')
+    with col3: 
+        st.metric(label="Headcount ratio",value= f'{hc_ratio2:,.2f}')
 with cols[2]:
     cn_tnc00 = df_danglamviec[df_danglamviec['Line'].str.contains('TNC00', case=False, na=False)]['MST'].count()
     cn_tnc01 = df_danglamviec[df_danglamviec['Line'].str.contains('TNC01', case=False, na=False)]['MST'].count()
