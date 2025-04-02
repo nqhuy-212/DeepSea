@@ -58,6 +58,10 @@ df_SAM['DEN_NGAY'] = pd.to_datetime(df_SAM['DEN_NGAY'])
 df_ppc = pd.merge(df_ppc,df_SAM,on='Style_P',how='left')
 df_ppc = df_ppc[(df_ppc['WorkDate'] >= df_ppc['TU_NGAY']) & (df_ppc['WorkDate'] <= df_ppc['DEN_NGAY'])]
 df_ppc = df_ppc.drop(['TU_NGAY', 'DEN_NGAY'], axis=1)
+df_ppc = df_ppc.groupby(['Line', 'WorkDate', 'Style_P'], as_index=False).agg({
+    'SAM': 'sum',  
+    **{col: 'first' for col in df_ppc.columns if col not in ['Line', 'WorkDate', 'Style_P', 'SAM']} 
+})
 df_ppc = df_ppc.query("Fty in @sel_fty")
 
 unit = df_ppc[df_ppc['Fty'].isin(sel_fty)]['Unit'].unique()
@@ -161,6 +165,7 @@ with st.expander("Dữ liệu chi tiết"):
 st.markdown("---")
 ################
 
+df_ppc
 df_ppc['Short_Style'] = df_ppc['Style_P'].str[-4:]
 df_SAH_pivot = df_ppc.pivot(index='Line',columns='WorkDate',values='SAH_P')
 df_Style_pivot = df_ppc.pivot(index='Line',columns='WorkDate',values='Style_P')
