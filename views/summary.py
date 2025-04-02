@@ -344,6 +344,10 @@ df_SAM['DEN_NGAY'] = pd.to_datetime(df_SAM['DEN_NGAY'])
 #Ghép bảng df4 và bảng SAM
 df4 = pd.merge(df4,df_SAM,on='Style_P',how='left')
 df4 = df4[(df4['WorkDate'] >= df4['TU_NGAY']) & (df4['WorkDate'] <= df4['DEN_NGAY'])]
+df4 = df4.groupby(['Line', 'WorkDate', 'Style_P'], as_index=False).agg({
+    'SAM': 'sum',  
+    **{col: 'first' for col in df4.columns if col not in ['Line', 'WorkDate', 'Style_P', 'SAM']} 
+})
 
 df_line_eff_pivot = pd.pivot_table(data=df_line_eff,index='Line',columns='WorkDate',values='Eff_A')
 df4['Style_P_short'] = df4['Style_P'].str[-4:]
@@ -361,7 +365,6 @@ df_line_SAM = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAM')
 
 customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values,df_line_SAM])
 
-df_line_eff_pivot
 #Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
     df_line_eff_pivot,
