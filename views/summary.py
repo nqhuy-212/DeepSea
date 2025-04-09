@@ -89,6 +89,13 @@ styles = df[
 (df['WorkDate'] <= end_date)]['Style_P'].unique()
 sel_style = st.sidebar.multiselect("Chọn Style:",options=styles,default=styles)
 
+df_ppc = get_data("DW",f"SELECT * FROM PPC WHERE WORKDATE between '{start_date}' and '{end_date}' ORDER BY WORKDATE DESC,LINE")
+df_ppc['Attn'] = df_ppc['Line'].apply(lambda x: 0.9 if str(x)[:1] == '1' else 0.93)
+df_ppc['Total_hours_P'] = df_ppc['Hours_P'] * df_ppc['Worker_P'] * df_ppc['Attn']
+df_ppc['Eff'] = df_ppc['SAH_P']/df_ppc['Total_hours_P']
+df_ppc['Fty'] = 'NT' + df_ppc['Line'].str[:1]
+df_ppc = df_ppc[df_ppc['Fty'].isin(sel_fty)]
+
 st.markdown(f'<h1 class="centered-title">BÁO CÁO TỔNG HỢP</h1>', unsafe_allow_html=True)
 df4 = df[
 (df['Unit'].isin(sel_unit)) & 
@@ -349,11 +356,16 @@ df4 = df4.groupby(['Line', 'WorkDate', 'Style_P'], as_index=False).agg({
     **{col: 'first' for col in df4.columns if col not in ['Line', 'WorkDate', 'Style_P', 'SAM']} 
 })
 
+df_line_eff['Eff_A'] = df_line_eff['Eff_A'].fillna(0)
 df_line_eff_pivot = pd.pivot_table(data=df_line_eff,index='Line',columns='WorkDate',values='Eff_A')
+df_ppc['Eff'] = df_ppc['Eff'].fillna(0)
+df_line_eff_pivot_ppc = pd.pivot_table(data=df_ppc,index='Line',columns='WorkDate',values='Eff')
+
 df4['Style_P_short'] = df4['Style_P'].str[-4:]
 df_line_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P')
 df_line_short_style = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Style_P_short')
 df_line_SAH = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAH_A')
+df_line_SAH_ppc = pd.pivot(df_ppc, index=['Line'], columns=['WorkDate'],values='SAH_P')
 
 image_folder = "images/png/"
 df4['Link_anh'] = image_folder + df4['Style_P'] + '.png'
@@ -362,15 +374,37 @@ df_line_link_anh = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Li
 #pivot lấy bảng SAM
 df_line_SAM = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAM')
 #Ghép các bảng pivot vào thành bảng chiều dùng làm customdata
+customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values,df_line_SAM, df_line_eff_pivot, df_line_eff_pivot_ppc, df_line_SAH_ppc])
 
-customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values,df_line_SAM])
+df_actual = df_line_eff_pivot.astype(float)
+df_plan = df_line_eff_pivot_ppc.astype(float)
+df_actual.columns = df_actual.columns.astype(str)
+df_plan.columns = df_plan.columns.astype(str)
+df_plan = df_plan.loc[df_actual.index, df_actual.columns] 
+df_diff = df_actual.subtract(df_plan, fill_value=0)
 
+text_values = df_actual.applymap(lambda x: f"{x:.0%}")
+vmin = df_diff.min().min()
+vmax = df_diff.max().max()
+
+padding = max(abs(vmin), abs(vmax)) * 1.1
 #Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
-    df_line_eff_pivot,
-    color_continuous_scale= "RdYlGn",
-    # color_continuous_midpoint=0.5,
-    text_auto= True)
+    df_diff.values,
+    x=df_diff.columns,                     
+    y=df_diff.index,                        
+    color_continuous_scale=[
+        [0.0, "#a50026"],   # đỏ đậm
+        [0.2, "#d73027"],
+        [0.4, "#fdae61"],
+        [0.5, "#ffffbf"],   # vàng sáng ở giữa
+        [0.6, "#a6d96a"],
+        [0.8, "#1a9850"],
+        [1.0, "#006837"] 
+    ],
+    zmin=-padding,  
+    zmax=padding,    
+    text_auto=False)
 fig.update_xaxes(
     dtick = 'D1',
     tickformat = '%d/%m',
@@ -390,15 +424,16 @@ fig.update_layout(
     height = max(num_row * row_hight, min_height)
 )
 fig.update_traces(
-    customdata=customdata,
-    texttemplate='%{z:.0%}',
+    text=text_values.values,               # text thủ công
+    texttemplate='%{text}',                # không định dạng lại
     textfont=dict(size=14),
-    zmin=0,
-    zmax=1,
+    customdata=customdata,
     hovertemplate=(
         "Style: %{customdata[0]}<br>"
         "SAM: %{customdata[3]:.4f}<br>"
         "SAH: %{customdata[1]:.0f}<br>"
+        "Efficiency PPC: %{customdata[5]:.1%}<br>"
+        "Chênh lệch: %{z:.1%}<br>"
         # "<img src='%{customdata[2]}' style='width:100px;height:100px;'>"
     )
 )
@@ -445,10 +480,35 @@ fig.update_traces(
 fig.update_layout(dragmode="pan")
 st.plotly_chart(fig,use_container_width=True,key='heatmap1',config=config)
 #Vẽ biểu đồ nhiệt theo SAH
+
+df_actual_sah = df_line_SAH.astype(float)
+df_plan_sah = df_line_SAH_ppc.astype(float)
+df_actual_sah.columns = df_actual_sah.columns.astype(str)
+df_plan_sah.columns = df_plan_sah.columns.astype(str)
+df_plan_sah = df_plan_sah.loc[df_actual_sah.index, df_actual_sah.columns] 
+df_diff_sah = df_actual_sah.subtract(df_plan_sah, fill_value=0)
+
+vmin_sah = df_diff_sah.min().min()
+vmax_sah = df_diff_sah.max().max()
+
+padding_sah = max(abs(vmin_sah), abs(vmax_sah)) * 1.1
+
 fig = px.imshow(
-    df_line_eff_pivot,
-    color_continuous_scale= "RdYlGn",
-    text_auto= True)
+    df_diff_sah.values,
+    x=df_diff_sah.columns,                     
+    y=df_diff_sah.index,                        
+    color_continuous_scale=[
+        [0.0, "#a50026"], 
+        [0.2, "#d73027"],
+        [0.4, "#fdae61"],
+        [0.5, "#ffffbf"],   
+        [0.6, "#a6d96a"],
+        [0.8, "#1a9850"],
+        [1.0, "#006837"] 
+    ],
+    zmin=-padding_sah,  
+    zmax=padding_sah,    
+    text_auto=False)
 fig.update_xaxes(
     dtick = 'D1',
     tickformat = '%d/%m',
@@ -472,9 +532,11 @@ fig.update_traces(
     zmin=0,
     zmax=1,
     hovertemplate=(
-        "Hiệu suất: %{z:.1%}<br>"
+        "Hiệu suất: %{customdata[4]:.1%}<br>"
         "Style: %{customdata[0]}<br>"
-        "SAM: %{customdata[3]:.4f}"
+        "SAM: %{customdata[3]:.4f}<br>"
+        "SAH PPC: %{customdata[6]:.1f}<br>"
+        "Chênh lệch: %{z:.1f}<br>"
     ),
     text=df_line_SAH.values, 
     texttemplate="%{text:.0f}"

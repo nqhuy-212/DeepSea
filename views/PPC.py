@@ -165,7 +165,6 @@ with st.expander("Dữ liệu chi tiết"):
 st.markdown("---")
 ################
 
-df_ppc
 df_ppc['Short_Style'] = df_ppc['Style_P'].str[-4:]
 df_SAH_pivot = df_ppc.pivot(index='Line',columns='WorkDate',values='SAH_P')
 df_Style_pivot = df_ppc.pivot(index='Line',columns='WorkDate',values='Style_P')
