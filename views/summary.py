@@ -433,13 +433,16 @@ fig = px.imshow(
     x=df_diff.columns,                     
     y=df_diff.index,                        
     color_continuous_scale=[
-        [0.0, "#a50026"],   # đỏ đậm
-        [0.2, "#d73027"],
-        [0.4, "#fdae61"],
-        [0.5, "#ffffbf"],   # vàng sáng ở giữa
-        [0.6, "#a6d96a"],
-        [0.8, "#1a9850"],
-        [1.0, "#006837"] 
+        [0.0,   "#d73027"],   # đỏ cho cực âm (vd -40)
+        [0.1,   "#b2182b"],   # đỏ đậm cho -20
+        [0.2,   "#f46d43"],   # cam đậm cho -10
+        [0.3,   "#f46d43"],   # cam đậm vừa cho gần 0
+        [0.4,   "#fdae61"],   # cam sáng cho âm nhẹ
+        [0.4999, "#fee08b"],  # vàng nhạt cho gần 0
+        [0.5,   "#ffffbf"],   # vàng trung tính tại 0
+        [0.6,   "#a6d96a"],   # xanh lá nhạt
+        [0.8,   "#1a9850"],   # xanh đậm
+        [1.0,   "#006837"] 
     ],
     zmin=-padding,  
     zmax=padding,    
@@ -482,9 +485,24 @@ fig.update_layout(dragmode="pan")
 st.plotly_chart(fig,use_container_width=True,key='heatmap0',config=config)
 #Vẽ biểu đồ nhiệt theo short style
 fig = px.imshow(
-    df_line_eff_pivot,
-    color_continuous_scale= "RdYlGn",
-    text_auto= True)
+    df_diff.values,
+    x=df_diff.columns,                     
+    y=df_diff.index,                        
+    color_continuous_scale=[
+        [0.0,   "#d73027"],   # đỏ cho cực âm (vd -40)
+        [0.1,   "#b2182b"],   # đỏ đậm cho -20
+        [0.2,   "#f46d43"],   # cam đậm cho -10
+        [0.3,   "#f46d43"],   # cam đậm vừa cho gần 0
+        [0.4,   "#fdae61"],   # cam sáng cho âm nhẹ
+        [0.4999, "#fee08b"],  # vàng nhạt cho gần 0
+        [0.5,   "#ffffbf"],   # vàng trung tính tại 0
+        [0.6,   "#a6d96a"],   # xanh lá nhạt
+        [0.8,   "#1a9850"],   # xanh đậm
+        [1.0,   "#006837"] 
+    ],
+    zmin=-padding,  
+    zmax=padding,    
+    text_auto=False)
 fig.update_xaxes(
     dtick = 'D1',
     tickformat = '%d/%m',
@@ -508,10 +526,11 @@ fig.update_traces(
     zmin=0,
     zmax=1,
     hovertemplate=(
-        "Hiệu suất: %{z:.1%}<br>"
+        "Hiệu suất: %{customdata[4]:.1%}<br>"
         "SAH: %{customdata[1]:.0f}<br>"
         "Style: %{customdata[0]}<br>"
-        "SAM: %{customdata[3]:.4f}"
+        "SAM: %{customdata[3]:.4f}<br>"
+        "Chênh lệch Eff: %{z:.1%}<br>"
     ),
     text=df_line_short_style.values, 
     texttemplate="%{text}"
@@ -537,13 +556,16 @@ fig = px.imshow(
     x=df_diff_sah.columns,                     
     y=df_diff_sah.index,                        
     color_continuous_scale=[
-        [0.0, "#a50026"], 
-        [0.2, "#d73027"],
-        [0.4, "#fdae61"],
-        [0.5, "#ffffbf"],   
-        [0.6, "#a6d96a"],
-        [0.8, "#1a9850"],
-        [1.0, "#006837"] 
+        [0.0,   "#d73027"],   # đỏ cho cực âm (vd -40)
+        [0.1,   "#b2182b"],   # đỏ đậm cho -20
+        [0.2,   "#f46d43"],   # cam đậm cho -10
+        [0.3,   "#f46d43"],   # cam đậm vừa cho gần 0
+        [0.4,   "#fdae61"],   # cam sáng cho âm nhẹ
+        [0.4999, "#fee08b"],  # vàng nhạt cho gần 0
+        [0.5,   "#ffffbf"],   # vàng trung tính tại 0
+        [0.6,   "#a6d96a"],   # xanh lá nhạt
+        [0.8,   "#1a9850"],   # xanh đậm
+        [1.0,   "#006837"] 
     ],
     zmin=-padding_sah,  
     zmax=padding_sah,    
