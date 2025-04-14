@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from load_data import get_data
 import time
 import numpy as np
+from io import BytesIO
 
 st.markdown(
     """
@@ -119,6 +120,44 @@ Hour_A = df4['Total_hours_A'].sum()/df4['Worker_A'].sum()
 Hour_P = df4['Total_hours_P'].sum()/df4['Worker_P'].sum()
 SAH_CN_A = df4['SAH_A'].sum()/df4['Worker_A'].sum()
 SAH_CN_P = df4['SAH_P'].sum()/df4['Worker_P'].sum()
+
+data = {
+    'Sản lượng': [f'{Qty_P:,.0f}', f'{Qty_A:,.0f}'],
+    'SAH': [f'{SAH_P:,.0f}', f'{SAH_A:,.0f}'],
+    'Tổng TGLV': [f'{Total_hours_P:,.0f}', f'{Total_hours_A:,.0f}'],
+    'Hiệu suất': [f'{Eff_P:,.1%}', f'{Eff_A:,.1%}'],
+    'Tổng CN may': [f'{Worker_P:,.0f}', f'{Worker_A:,.0f}'],
+    'Tỉ lệ đi làm': [f'{Attn_P:,.0%}', f'{Attn_A:,.1%}'],
+    'Số giờ làm việc': [f'{Hour_P:,.1f}', f'{Hour_A:,.1f}'],
+    'SAH/CN/Ngày': [f'{SAH_CN_P:,.1f}', f'{SAH_CN_A:,.1f}']
+}
+
+summary_df = pd.DataFrame(data, index=['Kế hoạch', 'Thực tế'])
+
+# Hàm export Excel
+def to_excel(df):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='Summary', index=True)
+        workbook = writer.book
+        worksheet = writer.sheets['Summary']
+
+        for i, column in enumerate(df.reset_index().columns): 
+            col_width = max(df.reset_index()[column].astype(str).map(len).max(), len(str(column))) + 2
+            worksheet.set_column(i, i, col_width)
+
+    return output.getvalue()
+
+excel_bytes = to_excel(summary_df)
+
+now_str = datetime.now().strftime("%d%m%Y%H%M%S")
+# Nút tải file
+st.download_button(
+    label="📥 Tải Excel",
+    data=excel_bytes,
+    file_name=f"tong_hop_{now_str}.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
 
 cols = st.columns(4, gap= 'large')
 with cols[0]:
