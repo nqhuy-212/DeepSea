@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go 
 from datetime import date,datetime,timedelta
 from load_data import get_data,exec_query
+from io import BytesIO
 
 st.logo("logo_white.png",size= 'large')
 st.markdown(
@@ -178,6 +179,35 @@ start_date = st.sidebar.date_input(label="Từ ngày:",value= first_day_of_month
 max_date = df_total_hc_sew['NGAY'].max()
 end_date = st.sidebar.date_input(label="Đến ngày:", value= max_date)
 df_total_hc_sew_filtered = df_total_hc_sew.query('NGAY >= @start_date and NGAY <= @end_date')
+
+pivot_df = df_total_hc_sew_filtered.pivot(index='NGAY', columns='Chi_so', values='HC_formated')
+
+summary_df = pd.DataFrame(pivot_df)
+
+# Hàm export Excel
+def to_excel(df):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='Sheet1', index=True)
+        worksheet = writer.sheets['Sheet1']
+
+        for i, column in enumerate(df.reset_index().columns): 
+            col_width = max(df.reset_index()[column].astype(str).map(len).max(), len(str(column))) + 2
+            worksheet.set_column(i, i, col_width)
+
+    return output.getvalue()
+
+excel_bytes = to_excel(summary_df)
+
+now_str = datetime.now().strftime("%d%m%Y%H%M%S")
+# Nút tải file
+st.download_button(
+    label="📥 Tải Excel",
+    data=excel_bytes,
+    file_name=f"bien_dong_{now_str}.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
+
 fig = px.line(
     df_total_hc_sew_filtered,
     x= 'NGAY',
