@@ -39,7 +39,7 @@ df1= df1.groupby(by=['WorkDate','Line']).agg({
 
 df2 = get_data('DW','SELECT * FROM PPC')
 #st.dataframe(df2)
-df3 = get_data('DW',"SELECT * FROM HR_INCLUDE_TNC WHERE KOIS = 'K'  AND WORKDATE >= '2024-09-01'")
+df3 = get_data('DW',"SELECT * FROM HR_INCLUDE_TNC WHERE KOIS = 'K' AND WORKDATE >= '2024-09-01'")
 # st.dataframe(df3)
 
 #ghép các bảng với nhau
@@ -103,6 +103,8 @@ df4 = df[
 (df['WorkDate'] >= start_date) & 
 (df['WorkDate'] <= end_date) &
 (df['Style_P'].isin(sel_style))]
+
+df_ppc = df_ppc[df_ppc['Style_P'].isin(sel_style)]
 
 Qty_A = df4['Qty_A'].sum()
 Qty_P = df4['Qty_P'].sum()
@@ -413,6 +415,7 @@ df_line_link_anh = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Li
 #pivot lấy bảng SAM
 df_line_SAM = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAM')
 #Ghép các bảng pivot vào thành bảng chiều dùng làm customdata
+
 customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values,df_line_SAM, df_line_eff_pivot, df_line_eff_pivot_ppc, df_line_SAH_ppc])
 
 df_actual = df_line_eff_pivot.astype(float)
