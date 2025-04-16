@@ -51,10 +51,10 @@ with cols[1]:
     
     cn_may_tnc = cn_may_tnc = df_danglamviec[
         (df_danglamviec['Headcount_category'].notna() & (df_danglamviec['Headcount_category'] == "K")) | 
-        (df_danglamviec['Section_code'].notna() & (df_danglamviec['Section_code'] == "1TNC"))
+        (df_danglamviec['Section_code'].notna() & (df_danglamviec['Section_code'].str.contains("TNC")))
     ]['MST'].count()
     
-    hc_ratio2 = cn_may_tnc/(tong_hc-cn_may_tnc)
+    hc_ratio2 = (tong_hc-cn_may_tnc)/cn_may_tnc
     
     st.info('Công nhân may công nghiệp',icon= "👷" )
     col1,col2,col3 = st.columns(3)
