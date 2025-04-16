@@ -106,7 +106,7 @@ df4 = df[
 
 df_ppc = df_ppc[df_ppc['Style_P'].isin(sel_style)]
 
-Qty_A = df4['Qty_A'].sum()
+Qty_A = df4[df4['Line'] != '11S02']['Qty_A'].sum()
 Qty_P = df4['Qty_P'].sum()
 SAH_A = df4['SAH_A'].sum()
 SAH_P = df4['SAH_P'].sum()
