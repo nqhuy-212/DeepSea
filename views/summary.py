@@ -96,6 +96,7 @@ df_ppc['Total_hours_P'] = df_ppc['Hours_P'] * df_ppc['Worker_P'] * df_ppc['Attn'
 df_ppc['Eff'] = df_ppc['SAH_P']/df_ppc['Total_hours_P']
 df_ppc['Fty'] = 'NT' + df_ppc['Line'].str[:1]
 df_ppc = df_ppc[df_ppc['Fty'].isin(sel_fty)]
+df_ppc['Unit'] = df_ppc["Line"].str[0:1] + 'P0' + df_ppc["Line"].str[1:2]
 
 st.markdown(f'<h1 class="centered-title">BÁO CÁO TỔNG HỢP</h1>', unsafe_allow_html=True)
 df4 = df[
@@ -104,7 +105,8 @@ df4 = df[
 (df['WorkDate'] <= end_date) &
 (df['Style_P'].isin(sel_style))]
 
-df_ppc = df_ppc[df_ppc['Style_P'].isin(sel_style)]
+df_ppc = df_ppc[(df_ppc['Unit'].isin(sel_unit)) & 
+(df_ppc['Style_P'].isin(sel_style))]
 
 Qty_A = df4[df4['Line'] != '11S02']['Qty_A'].sum()
 Qty_P = df4['Qty_P'].sum()
