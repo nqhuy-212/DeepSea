@@ -90,7 +90,7 @@ styles = df[
 (df['WorkDate'] <= end_date)]['Style_P'].unique()
 sel_style = st.sidebar.multiselect("Chọn Style:",options=styles,default=styles)
 
-df_ppc = get_data("DW",f"SELECT * FROM PPC WHERE WORKDATE between '{start_date}' and '{end_date}' ORDER BY WORKDATE DESC,LINE")
+df_ppc = get_data("DW",f"SELECT * FROM PPC WHERE WORKDATE between '{start_date}' and '{end_date}'")
 df_ppc['Attn'] = df_ppc['Line'].apply(lambda x: 0.9 if str(x)[:1] == '1' else 0.93)
 df_ppc['Total_hours_P'] = df_ppc['Hours_P'] * df_ppc['Worker_P'] * df_ppc['Attn']
 df_ppc['Eff'] = df_ppc['SAH_P']/df_ppc['Total_hours_P']
@@ -105,14 +105,22 @@ df4 = df[
 (df['WorkDate'] <= end_date) &
 (df['Style_P'].isin(sel_style))]
 
+df_tnc = get_data("INCENTIVE",f"""select hs.NHA_MAY, hs.SAH, hs.SO_GIO from HIEU_SUAT_CN_TNC01 hs
+LEFT JOIN INCENTIVE.DBO.TRANG_THAI_DON_HANG dh
+ON hs.CHUYEN = dh.CHUYEN AND hs.NGAY = dh.NGAY
+WHERE hs.CHUYEN_HR LIKE '%TNC01%' AND dh.CHUYEN_MOI = N'TRÊN 2 THÁNG'
+AND hs.NGAY BETWEEN '{start_date}' AND '{end_date}'""")
+
+df_tnc = df_tnc[(df_tnc['NHA_MAY'].isin(sel_fty))]
+
 df_ppc = df_ppc[(df_ppc['Unit'].isin(sel_unit)) & 
 (df_ppc['Style_P'].isin(sel_style))]
 
 Qty_A = df4[df4['Line'] != '11S02']['Qty_A'].sum()
 Qty_P = df4['Qty_P'].sum()
-SAH_A = df4['SAH_A'].sum()
+SAH_A = df4['SAH_A'].sum() 
 SAH_P = df4['SAH_P'].sum()
-Total_hours_A = df4['Total_hours_A'].sum()
+Total_hours_A = df4['Total_hours_A'].sum() 
 Total_hours_P = df4['Total_hours_P'].sum()
 Eff_A = SAH_A/Total_hours_A
 Eff_P = SAH_P/Total_hours_P
