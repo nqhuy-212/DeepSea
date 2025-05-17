@@ -67,7 +67,12 @@ df = df[df['Fty'] != 'nan']
 #chuyển cột WorkDate về dạng date
 df['WorkDate'] = pd.to_datetime(df['WorkDate'], format='%Y-%m-%d')
 df['WorkDate'] = df['WorkDate'].dt.date
-df['Attn_P'] = df.apply(lambda row: 0.93 if row['Fty'] == 'NT2' or row['Fty'] == 'NT3' else 0.9,axis=1)
+df['Attn_P'] = df.apply(
+    lambda row: 0.93 if (row['Fty'] in ['NT2', 'NT3'] and row['WorkDate'] < date(2025, 5, 1))
+    else 0.91 if (row['Fty'] in ['NT2', 'NT3'])
+    else 0.9,
+    axis=1
+)
 df['Total_hours_P'] = df['Hours_P'] * df['Worker_P'] * df['Attn_P']
 df['WS*Hours_A'] = df['Worker_A']*df['Hours_A']
 
