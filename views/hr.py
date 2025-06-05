@@ -37,7 +37,7 @@ nghi_ts = df_nghithaisan['MST'].count()
 
 hom_nay = f"{datetime.today(): %d/%m/%Y}"
 st.subheader(f"Thông tin nhân sự ngày {hom_nay}")
-cols = st.columns(4)
+cols = st.columns(5)
 with cols[0]:
     st.info('Tổng số cán bộ công nhân viên hiện tại',icon= "👩‍⚕️" )
     col1,col2 = st.columns(2)
@@ -82,7 +82,11 @@ with cols[3]:
         st.metric(label=f"Toàn nhà máy ({cn_dilam/tong_hc:,.0%})",value= f'{cn_dilam:,.0f}')
     with col2: 
         st.metric(label=f"Công nhân may ({cn_may_dilam/cn_may:,.0%})",value= f'{cn_may_dilam:,.0f}')
-
+with cols[4]:
+    cn_thoi_vu = get_data('HR',f"Select count(*) as thoi_vu From Thoi_vu where NhaMay ='{nha_may}'")
+    st.info('Công nhân thời vụ đi làm hôm nay',icon= "👶" )
+    st.metric(label=f"Tổng số công nhân thời vụ",value= f'{cn_thoi_vu['thoi_vu'][0]:,.0f}')
+    
 today = date.today() 
 df_danglamviec['Ngay_sinh'] = pd.to_datetime(df_danglamviec['Ngay_sinh'],format='%Y-%m-%d')
 df_danglamviec['Tuổi']= df_danglamviec['Ngay_sinh'].apply(lambda x: today.year - x.year)
