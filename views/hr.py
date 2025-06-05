@@ -30,6 +30,11 @@ df_nghithaisan = get_data(DB='HR',query=f"Select * from Danh_sach_CBCNV where tr
 df_dilam = get_data(DB='HR',query=f"Select * from Cham_cong_sang where Factory = '{nha_may}' and Gio_vao is not null")
 df_TGLV = get_data('HR',f"SELECT * FROM TONG_TGLV_DEEPSEA WHERE NHA_MAY = '{nha_may}'")
 df_TGLV_so_CN_chuyen = get_data('HR',f"SELECT * FROM SO_CN_TONG_TGLV_THEO_CHUYEN_DEEPSEA WHERE NHA_MAY = '{nha_may}'")
+df_thoi_vu_may = get_data('HR',f"Select count(*) as thoi_vu From Thoi_vu where BoPhan = 'May' and NhaMay ='{nha_may}'")
+df_thoi_vu_ngoai = get_data('HR',f"Select count(*) as thoi_vu From Thoi_vu where BoPhan <> 'May' and NhaMay ='{nha_may}'")
+
+thoi_vu_may = df_thoi_vu_may['thoi_vu'][0]
+thoi_vu_ngoai = df_thoi_vu_ngoai['thoi_vu'][0]
 
 #các tính toán cần thiết
 tong_hc = df_danglamviec['MST'].count()
@@ -47,7 +52,7 @@ with cols[0]:
         st.metric(label="Nghỉ thai sản",value= f'{nghi_ts:,.0f}')
 with cols[1]:
     cn_may = df_danglamviec[df_danglamviec['Headcount_category'] == "K"]['MST'].count()
-    hc_ratio = (tong_hc-cn_may)/cn_may
+    hc_ratio = ((tong_hc + thoi_vu_may + thoi_vu_ngoai)-(cn_may+thoi_vu_may))/(cn_may+thoi_vu_may)
     
     cn_may_tnc = cn_may_tnc = df_danglamviec[
         (df_danglamviec['Headcount_category'].notna() & (df_danglamviec['Headcount_category'] == "K")) | 
@@ -83,14 +88,12 @@ with cols[3]:
     with col2: 
         st.metric(label=f"Công nhân may ({cn_may_dilam/cn_may:,.0%})",value= f'{cn_may_dilam:,.0f}')
 with cols[4]:
-    thoi_vu_may = get_data('HR',f"Select count(*) as thoi_vu From Thoi_vu where BoPhan = 'May' and NhaMay ='{nha_may}'")
-    thoi_vu_ngoai = get_data('HR',f"Select count(*) as thoi_vu From Thoi_vu where BoPhan <> 'May' and NhaMay ='{nha_may}'")
     st.info('Công nhân thử việc nhóm 2',icon= "👶" )
     col1,col2 = st.columns(2)
     with col1:
-        st.metric(label=f"May",value= f'{thoi_vu_may['thoi_vu'][0]:,.0f}')
+        st.metric(label=f"May",value= f'{thoi_vu_may:,.0f}')
     with col2:
-        st.metric(label=f"Khối ngoài",value= f'{thoi_vu_ngoai['thoi_vu'][0]:,.0f}')
+        st.metric(label=f"Khối ngoài",value= f'{thoi_vu_ngoai:,.0f}')
           
 today = date.today() 
 df_danglamviec['Ngay_sinh'] = pd.to_datetime(df_danglamviec['Ngay_sinh'],format='%Y-%m-%d')
