@@ -83,10 +83,15 @@ with cols[3]:
     with col2: 
         st.metric(label=f"Công nhân may ({cn_may_dilam/cn_may:,.0%})",value= f'{cn_may_dilam:,.0f}')
 with cols[4]:
-    cn_thoi_vu = get_data('HR',f"Select count(*) as thoi_vu From Thoi_vu where NhaMay ='{nha_may}'")
-    st.info('Công nhân thời vụ đi làm hôm nay',icon= "👶" )
-    st.metric(label=f"Tổng số công nhân thời vụ",value= f'{cn_thoi_vu['thoi_vu'][0]:,.0f}')
-    
+    thoi_vu_may = get_data('HR',f"Select count(*) as thoi_vu From Thoi_vu where BoPhan = 'May' and NhaMay ='{nha_may}'")
+    thoi_vu_ngoai = get_data('HR',f"Select count(*) as thoi_vu From Thoi_vu where BoPhan <> 'May' and NhaMay ='{nha_may}'")
+    st.info('Công nhân thử việc nhóm 2',icon= "👶" )
+    col1,col2 = st.columns(2)
+    with col1:
+        st.metric(label=f"May",value= f'{thoi_vu_may['thoi_vu'][0]:,.0f}')
+    with col2:
+        st.metric(label=f"Khối ngoài",value= f'{thoi_vu_ngoai['thoi_vu'][0]:,.0f}')
+          
 today = date.today() 
 df_danglamviec['Ngay_sinh'] = pd.to_datetime(df_danglamviec['Ngay_sinh'],format='%Y-%m-%d')
 df_danglamviec['Tuổi']= df_danglamviec['Ngay_sinh'].apply(lambda x: today.year - x.year)
