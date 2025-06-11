@@ -94,7 +94,7 @@ with cols[4]:
         st.metric(label=f"May",value= f'{thoi_vu_may:,.0f}')
     with col2:
         st.metric(label=f"Khối ngoài",value= f'{thoi_vu_ngoai:,.0f}')
-          
+  
 today = date.today() 
 df_danglamviec['Ngay_sinh'] = pd.to_datetime(df_danglamviec['Ngay_sinh'],format='%Y-%m-%d')
 df_danglamviec['Tuổi']= df_danglamviec['Ngay_sinh'].apply(lambda x: today.year - x.year)

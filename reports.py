@@ -105,6 +105,12 @@ OQL_page = st.Page(
     icon= ':material/sentiment_dissatisfied:'
 )
 
+hr_location_page = st.Page(
+    page="views/hr3.py",
+    title="Phân bố nhân sự",
+    icon= ':material/group:'
+)
+
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
@@ -140,7 +146,7 @@ else:
     pg = st.navigation(pages={
     'Kết quả sản xuất' : [sumary_page, eff_style],
     'Bảng xếp hạng' : [rank_page],
-    'Nhân sự' : [hr_page,map_page],
+    'Nhân sự' : [hr_page,map_page, hr_location_page],
     'Kế hoạch' : [ppc_page],
     'Chất lượng' : [OQL_page],
     'Hệ thống' :[salary_page,incentive_page,incentive_time_page,hourly_page]   
