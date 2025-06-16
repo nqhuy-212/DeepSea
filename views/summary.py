@@ -392,7 +392,14 @@ df_line_eff = df4.groupby(by = ['WorkDate','Line']).agg({
     'Total_hours_A' : 'sum'
 },axis = 1).reset_index()
 
-df_line_eff['Eff_A'] = df_line_eff['SAH_A']/df_line_eff['Total_hours_A']
+if 'Total_hours_A' in df_line_eff.columns:
+    df_line_eff['Eff_A'] = df_line_eff.apply(
+        lambda row: row['SAH_A'] / row['Total_hours_A'] if row['Total_hours_A'] != 0 else 0,
+        axis=1
+    )
+else:
+    df_line_eff['Eff_A'] = 0
+
 
 #Lấy SAM bên Incentive
 df_SAM = get_data("INCENTIVE","""
@@ -445,6 +452,8 @@ vmin = df_diff.min().min()
 vmax = df_diff.max().max()
 
 padding = max(abs(vmin), abs(vmax)) * 1.1
+
+
 #Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
     df_diff.values,
