@@ -46,6 +46,8 @@ df3 = get_data('DW',"SELECT * FROM HR_INCLUDE_TNC WHERE KOIS = 'K' AND WORKDATE 
 df = pd.merge(df2,df1, on = ['WorkDate','Line'], how= 'left')
 df = pd.merge(df,df3, on=['WorkDate','Line'], how= 'left')
 
+df = df[~((df['Line'] == '25S01') & (df['WorkDate'] >= '2025-06-01'))]
+
 df = df.drop(columns='Fty')
 df['Fty'] = 'NT' + df["Line"].str[0:1]
 
@@ -422,6 +424,7 @@ df4 = df4.groupby(['Line', 'WorkDate', 'Style_P'], as_index=False).agg({
 df_line_eff['Eff_A'] = df_line_eff['Eff_A'].fillna(0)
 df_line_eff_pivot = pd.pivot_table(data=df_line_eff,index='Line',columns='WorkDate',values='Eff_A')
 df_ppc['Eff'] = df_ppc['Eff'].fillna(0)
+df_ppc = df_ppc[~((df_ppc['Line'] == '25S01') & (df_ppc['WorkDate'] >= '2025-06-01'))]
 df_line_eff_pivot_ppc = pd.pivot_table(data=df_ppc,index='Line',columns='WorkDate',values='Eff')
 
 df4['Style_P_short'] = df4['Style_P'].str[-4:]
@@ -438,6 +441,7 @@ df_line_link_anh = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='Li
 df_line_SAM = pd.pivot(df4, index=['Line'], columns=['WorkDate'],values='SAM')
 #Ghép các bảng pivot vào thành bảng chiều dùng làm customdata
 
+df_line_eff_pivot = df_line_eff_pivot.fillna(0)
 customdata = np.dstack([df_line_style.values, df_line_SAH.values,df_line_link_anh.values,df_line_SAM, df_line_eff_pivot, df_line_eff_pivot_ppc, df_line_SAH_ppc])
 
 df_actual = df_line_eff_pivot.astype(float)
@@ -447,12 +451,13 @@ df_plan.columns = df_plan.columns.astype(str)
 df_plan = df_plan.loc[df_actual.index, df_actual.columns] 
 df_diff = df_actual.subtract(df_plan, fill_value=0)
 
+
+
 text_values = df_actual.applymap(lambda x: f"{x:.0%}")
 vmin = df_diff.min().min()
 vmax = df_diff.max().max()
 
 padding = max(abs(vmin), abs(vmax)) * 1.1
-
 
 #Vẽ biểu đồ nhiệt theo Eff
 fig = px.imshow(
