@@ -46,8 +46,6 @@ df3 = get_data('DW',"SELECT * FROM HR_INCLUDE_TNC WHERE KOIS = 'K' AND WORKDATE 
 df = pd.merge(df2,df1, on = ['WorkDate','Line'], how= 'left')
 df = pd.merge(df,df3, on=['WorkDate','Line'], how= 'left')
 
-df = df[~((df['Line'] == '25S01') & (df['WorkDate'] >= '2025-06-01'))]
-
 df = df.drop(columns='Fty')
 df['Fty'] = 'NT' + df["Line"].str[0:1]
 
@@ -140,6 +138,10 @@ Hour_P = df4['Total_hours_P'].sum()/df4['Worker_P'].sum()
 SAH_CN_A = df4['SAH_A'].sum()/df4['Worker_A'].sum()
 SAH_CN_P = df4['SAH_P'].sum()/df4['Worker_P'].sum()
 
+df4['WorkDate'] = pd.to_datetime(df4['WorkDate'])
+df_intern = df4[((df4['Line'] == '25S01') & (df4['WorkDate'] >= '2025-06-01'))]
+
+df4 = df4[~((df4['Line'] == '25S01') & (df4['WorkDate'] >= '2025-06-01'))]
 data = {
     'Sản lượng': [f'{Qty_P:,.0f}', f'{Qty_A:,.0f}'],
     'SAH': [f'{SAH_P:,.0f}', f'{SAH_A:,.0f}'],
@@ -424,6 +426,8 @@ df4 = df4.groupby(['Line', 'WorkDate', 'Style_P'], as_index=False).agg({
 df_line_eff['Eff_A'] = df_line_eff['Eff_A'].fillna(0)
 df_line_eff_pivot = pd.pivot_table(data=df_line_eff,index='Line',columns='WorkDate',values='Eff_A')
 df_ppc['Eff'] = df_ppc['Eff'].fillna(0)
+
+df_ppc_intern = df_ppc[((df_ppc['Line'] == '25S01') & (df_ppc['WorkDate'] >= '2025-06-01'))]
 df_ppc = df_ppc[~((df_ppc['Line'] == '25S01') & (df_ppc['WorkDate'] >= '2025-06-01'))]
 df_line_eff_pivot_ppc = pd.pivot_table(data=df_ppc,index='Line',columns='WorkDate',values='Eff')
 
@@ -450,8 +454,6 @@ df_actual.columns = df_actual.columns.astype(str)
 df_plan.columns = df_plan.columns.astype(str)
 df_plan = df_plan.loc[df_actual.index, df_actual.columns] 
 df_diff = df_actual.subtract(df_plan, fill_value=0)
-
-
 
 text_values = df_actual.applymap(lambda x: f"{x:.0%}")
 vmin = df_diff.min().min()
@@ -636,6 +638,80 @@ fig.update_traces(
 )
 fig.update_layout(dragmode="pan")
 st.plotly_chart(fig,use_container_width=True,key='heatmap2',config=config)
+
+
+#Vẽ biểu đồ nhiệt theo SAH thực tập
+df_line_SAH_intern = pd.pivot(df_intern, index=['Line'], columns=['WorkDate'],values='SAH_A')
+df_line_SAH_intern = df_line_SAH_intern.fillna(0)
+df_line_SAH_ppc_intern = pd.pivot(df_ppc_intern, index=['Line'], columns=['WorkDate'],values='SAH_P')
+df_line_SAH_ppc_intern = df_line_SAH_ppc_intern.fillna(0)
+
+df_actual_sah_intern = df_line_SAH_intern.astype(float)
+df_plan_sah_intern = df_line_SAH_ppc_intern.astype(float)
+df_actual_sah_intern.columns = df_actual_sah_intern.columns.astype(str)
+df_plan_sah_intern.columns = df_plan_sah_intern.columns.astype(str)
+df_plan_sah_intern = df_plan_sah_intern.loc[df_actual_sah_intern.index, df_actual_sah_intern.columns] 
+df_diff_sah_intern = df_actual_sah_intern.subtract(df_plan_sah_intern, fill_value=0)
+
+vmin_sah = df_diff_sah_intern.min().min()
+vmax_sah = df_diff_sah_intern.max().max()
+
+padding_sah = max(abs(vmin_sah), abs(vmax_sah)) * 1.1
+
+customdata2 = np.dstack([df_line_SAH_intern.values, df_line_SAH_ppc_intern])
+
+fig = px.imshow(
+    df_diff_sah_intern.values,
+    x=df_diff_sah_intern.columns,                     
+    y=df_diff_sah_intern.index,                        
+    color_continuous_scale=[
+        [0.0,   "#d73027"],   # đỏ cho cực âm (vd -40)
+        [0.1,   "#b2182b"],   # đỏ đậm cho -20
+        [0.2,   "#f46d43"],   # cam đậm cho -10
+        [0.3,   "#f46d43"],   # cam đậm vừa cho gần 0
+        [0.4,   "#fdae61"],   # cam sáng cho âm nhẹ
+        [0.4999, "#fee08b"],  # vàng nhạt cho gần 0
+        [0.5,   "#ffffbf"],   # vàng trung tính tại 0
+        [0.6,   "#a6d96a"],   # xanh lá nhạt
+        [0.8,   "#1a9850"],   # xanh đậm
+        [1.0,   "#006837"] 
+    ],
+    zmin=-padding_sah,  
+    zmax=padding_sah,    
+    text_auto=False)
+fig.update_xaxes(
+    dtick = 'D1',
+    tickformat = '%d/%m',
+    tickfont = dict(size = 12)
+)
+fig.update_yaxes(
+    tickfont = dict(size = 14),
+    dtick = 'D1'
+)
+num_row = df_line_SAH_intern.shape[0]
+row_hight = 35
+fig.update_layout(
+    title = "SAH thực tập",
+    xaxis_title = "Ngày",
+    yaxis_title = "Chuyền",
+    height = max(num_row * row_hight, min_height)
+)
+fig.update_traces(
+    customdata = customdata2,
+    textfont=dict(size=14),
+    zmin=0,
+    zmax=1,
+    hovertemplate=(
+        "SAH PPC: %{customdata[1]:.1f}<br>"
+        "Chênh lệch: %{z:.1f}<br>"
+    ),
+    text=df_line_SAH_intern.values, 
+    texttemplate="%{text:.0f}"
+)
+fig.update_layout(dragmode="pan")
+st.plotly_chart(fig,use_container_width=True,key='heatmap3',config=config)
+
+
 # #Vẽ biểu đồ nhiệt theo Eff - Style - SAH
 # df4['Eff_formated'] = (df4['SAH_A']/df4['Total_hours_A']).apply(lambda x: f"{x:.0%}")
 # df4['SAH_A_formated'] = df4['SAH_A'].apply(lambda x: f"{x:.0f}")
