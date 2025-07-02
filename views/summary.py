@@ -64,6 +64,7 @@ df.insert(2,'Style_P',move_col)
 df.rename(columns={'Total_Qty':'Qty_A'}, inplace= True)
 df.dropna(subset=['Fty'])
 df = df[df['Fty'] != 'nan']
+
 #chuyển cột WorkDate về dạng date
 df['WorkDate'] = pd.to_datetime(df['WorkDate'], format='%Y-%m-%d')
 df['WorkDate'] = df['WorkDate'].dt.date
@@ -95,7 +96,7 @@ styles = df[
 (df['WorkDate'] <= end_date)]['Style_P'].unique()
 sel_style = st.sidebar.multiselect("Chọn Style:",options=styles,default=styles)
 
-df_ppc = get_data("DW",f"SELECT * FROM PPC WHERE WORKDATE between '{start_date}' and '{end_date}'")
+df_ppc = get_data("DW",f"SELECT * FROM PPC WHERE WORKDATE between '{start_date}' and '{end_date}' and line not like '%F%'")
 df_ppc['Attn'] = df_ppc['Line'].apply(lambda x: 0.9 if str(x)[:1] == '1' else 0.93)
 df_ppc['Total_hours_P'] = df_ppc['Hours_P'] * df_ppc['Worker_P'] * df_ppc['Attn']
 df_ppc['Eff'] = df_ppc['SAH_P']/df_ppc['Total_hours_P']
@@ -104,11 +105,13 @@ df_ppc = df_ppc[df_ppc['Fty'].isin(sel_fty)]
 df_ppc['Unit'] = df_ppc["Line"].str[0:1] + 'P0' + df_ppc["Line"].str[1:2]
 
 st.markdown(f'<h1 class="centered-title">BÁO CÁO TỔNG HỢP</h1>', unsafe_allow_html=True)
+
 df4 = df[
 (df['Unit'].isin(sel_unit)) & 
 (df['WorkDate'] >= start_date) & 
 (df['WorkDate'] <= end_date) &
 (df['Style_P'].isin(sel_style))]
+
 
 df_tnc = get_data("INCENTIVE",f"""select hs.NHA_MAY, hs.SAH, hs.SO_GIO from HIEU_SUAT_CN_TNC01 hs
 LEFT JOIN INCENTIVE.DBO.TRANG_THAI_DON_HANG dh
@@ -395,6 +398,8 @@ df_line_eff = df4.groupby(by = ['WorkDate','Line']).agg({
     'SAH_A' : 'sum',
     'Total_hours_A' : 'sum'
 },axis = 1).reset_index()
+
+df_line_eff = df_line_eff[~df_line_eff["Line"].str.contains("F", na=False)]
 
 if 'Total_hours_A' in df_line_eff.columns:
     df_line_eff['Eff_A'] = df_line_eff.apply(
