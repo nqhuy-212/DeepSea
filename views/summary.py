@@ -112,7 +112,6 @@ df4 = df[
 (df['WorkDate'] <= end_date) &
 (df['Style_P'].isin(sel_style))]
 
-
 df_tnc = get_data("INCENTIVE",f"""select hs.NHA_MAY, hs.SAH, hs.SO_GIO from HIEU_SUAT_CN_TNC01 hs
 LEFT JOIN INCENTIVE.DBO.TRANG_THAI_DON_HANG dh
 ON hs.CHUYEN = dh.CHUYEN AND hs.NGAY = dh.NGAY
@@ -142,9 +141,9 @@ SAH_CN_A = df4['SAH_A'].sum()/df4['Worker_A'].sum()
 SAH_CN_P = df4['SAH_P'].sum()/df4['Worker_P'].sum()
 
 df4['WorkDate'] = pd.to_datetime(df4['WorkDate'])
-df_intern = df4[((df4['Line'] == '25S01') & (df4['WorkDate'] >= '2025-06-01'))]
+df_intern = df4[((df4['Line'] == '25S01') & (df4['WorkDate'] >= '2025-06-01') & (df4['WorkDate'] < '2025-08-01'))]
 
-df4 = df4[~((df4['Line'] == '25S01') & (df4['WorkDate'] >= '2025-06-01'))]
+df4 = df4[~((df4['Line'] == '25S01') & (df4['WorkDate'] >= '2025-06-01') & (df4['WorkDate'] < '2025-08-01'))]
 data = {
     'Sản lượng': [f'{Qty_P:,.0f}', f'{Qty_A:,.0f}'],
     'SAH': [f'{SAH_P:,.0f}', f'{SAH_A:,.0f}'],
@@ -409,7 +408,6 @@ if 'Total_hours_A' in df_line_eff.columns:
 else:
     df_line_eff['Eff_A'] = 0
 
-
 #Lấy SAM bên Incentive
 df_SAM = get_data("INCENTIVE","""
                   SELECT STYLE AS Style_P ,TU_NGAY,DEN_NGAY , SUM(SAM) AS SAM
@@ -432,8 +430,8 @@ df_line_eff['Eff_A'] = df_line_eff['Eff_A'].fillna(0)
 df_line_eff_pivot = pd.pivot_table(data=df_line_eff,index='Line',columns='WorkDate',values='Eff_A')
 df_ppc['Eff'] = df_ppc['Eff'].fillna(0)
 
-df_ppc_intern = df_ppc[((df_ppc['Line'] == '25S01') & (df_ppc['WorkDate'] >= '2025-06-01'))]
-df_ppc = df_ppc[~((df_ppc['Line'] == '25S01') & (df_ppc['WorkDate'] >= '2025-06-01'))]
+df_ppc_intern = df_ppc[((df_ppc['Line'] == '25S01') & (df_ppc['WorkDate'] >= '2025-06-01') & (df_ppc['WorkDate'] < '2025-08-01'))]
+df_ppc = df_ppc[~((df_ppc['Line'] == '25S01') & (df_ppc['WorkDate'] >= '2025-06-01') & (df_ppc['WorkDate'] < '2025-08-01'))]
 df_line_eff_pivot_ppc = pd.pivot_table(data=df_ppc,index='Line',columns='WorkDate',values='Eff')
 
 df4['Style_P_short'] = df4['Style_P'].str[-4:]
