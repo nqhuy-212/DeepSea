@@ -65,7 +65,6 @@ def get_query(filter_type: str) -> str:
           ON ls.Chuyen = hc.Line 
           AND ls.Nha_may = hc.Factory 
           AND ls.Grade_code = hc.Grade_code 
-          AND ls.Chuc_danh = hc.Detail_job_title_VN
         WHERE 
         {additional_conditions}
         GROUP BY tn.Nam, tn.Thang, hc.Section_code
